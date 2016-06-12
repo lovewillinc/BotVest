@@ -1,0 +1,35 @@
+Pages
+	Generate Account Screen
+	Account info/ assest list
+	Asset View
+	Asset portfolio
+	QR scan page
+	Purhcase page
+
+
+	Functional Requirements
+		1.Generate Account Screen
+			A.The user shall be able to tap the generate account button
+				A1.After the generate account button has been clicked a loader will display that
+				shows "Creating your BotVest Account...".
+				A2. After the loader screen dismisses the account info page will display with a welcome message.
+		2. Account info/asset list
+			A. The user shall be able to view their currently owned assets, the amount they own of that asset, the date purchased, and the profits earned from that asset.
+				A1. The user shall be able to tap an assest in the list to view the assest details which contain the list of transactions for that assest, the amount of shares owned, the share value, and owned amount(price per share * number of shares owned)
+			B. The user shall be able to tap the buy button to buy shares of a bot.
+				B1. Once the user has tapped the buy button the QR scanner page will display with instructions on how to scan the QR code of a bot.
+				B2. After the QR code of a bot has been scanned the purchase details will display, the details shall contain the shares remianing to be purchased, the price per share,  and the amount of shares that already been purchased. 
+					B2-1. The user shall be able to tap cancel to go back to the account info screen.
+					B2-2. The user shall be able to input the dollar amount they wish to purchase at which time the displayed numbers of shares that they are electing to purchase will update and display to the user.
+					B2-3. The user shall be able to tap purchase to purchase the amount of shares the user input, after which a purchase success message is displayed and the user is redirected back to the account info/asset list page with the newly purchased asset being at the top of the list.
+			C. The user shall be able to tap the portfolio button to view their portfolio data.
+				C1. The portfolio page shall display a pie chart of the invested bot sectors.(Diversification chart)
+				C2. The portfolio page shall display the total profits earned, the total amount invested.
+
+
+
+
+
+
+
+
