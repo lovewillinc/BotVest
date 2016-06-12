@@ -1,0 +1,22 @@
+{
+  "name": "BotVest",
+  "authors": [
+    "michaelfioretti <michael@fluent.network>",
+    "dustinboyce <dustin@fluent.network>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "mithril": "^0.2.5"
+  }
+}
