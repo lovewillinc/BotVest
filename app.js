@@ -1,6 +1,11 @@
 views = {
     welcome: function(ctrl) {
-        return m("h3", "Welcome")
+        return [
+            m("h3", "Welcome to BotVest"),
+            m("a", {
+                onclick: ctrl.generateAccount
+            }, "Generate Account")
+        ]
     },
     homepage: function(ctrl) {
         return m("h3", "Homepage")
@@ -15,7 +20,10 @@ views = {
         return m("h3", "purchase")
     },
     portfolio: function(ctrl) {
-    	return m("h3", "portfolio")
+        return m("h3", "portfolio")
+    }
+    loader: function() {
+    	return m("h3", "Now showing loader")
     }
 }
 var app = {
@@ -25,7 +33,7 @@ var app = {
         return self;
     },
     view: function(ctrl) {
-    	console.log("ctrl is:", ctrl);
+        console.log("ctrl is:", ctrl);
         return views[ctrl.activeView](ctrl)
     }
 }
