@@ -23286,30 +23286,15 @@ var app = {
             },
 
             self.test = function() {
-                alert("about to try it");
                 try {
-
-                    Object.keys(cordova).forEach(function(key){
-                        alert(key);
-                    })
-
                     cordova.plugins.barcodeScanner.scan(
                         function(result) {
                             if (!result.cancelled) {
                                 if (result.format == "QR_CODE") {
-                                    navigator.notification.prompt("Please enter name of data", function(input) {
-                                        var name = input.input1;
-                                        var value = result.text;
-
-                                        var data = localStorage.getItem("LocalData");
-                                        console.log(data);
-                                        data = JSON.parse(data);
-                                        data[data.length] = [name, value];
-
-                                        localStorage.setItem("LocalData", JSON.stringify(data));
-
-                                        alert("Done");
-                                    });
+                                    alert("We got a barcode\n" +
+                                        "Result: " + result.text + "\n" +
+                                        "Format: " + result.format + "\n" +
+                                        "Cancelled: " + result.cancelled);
                                 }
                             }
                         },
@@ -52119,7 +52104,7 @@ module.exports={
   "homepage": "https://github.com/bitpay/bitcore-lib#readme",
   "_id": "bitcore-lib@0.13.16",
   "_shasum": "16fc9931fa24b60415bcf3adad14e9d4a250c3f0",
-  "_from": "bitcore-lib@latest",
+  "_from": "bitcore-lib@>=0.13.16 <0.14.0",
   "_npmVersion": "2.15.0",
   "_nodeVersion": "4.4.2",
   "_npmUser": {
