@@ -24,8 +24,8 @@ var app = {
         self.ownedAssets = [];
         self.scannedAddress = null;
 
-        if(localStorage.account){
-        	web3Helper = require('./web3Helper');
+        if (localStorage.account) {
+            web3Helper = require('./web3Helper');
         }
 
         self.updateBalance = function() {
@@ -49,7 +49,7 @@ var app = {
             web3Helper = require('./web3Helper');
             //need to push account to chain and then fund from coinbase address
             setTimeout(function() {
-            	self.changeView('homepage')
+                self.changeView('homepage')
             }, 2000)
         }
 
@@ -74,16 +74,13 @@ var app = {
                     sharesOwned: "1000",
                     shareValue: "$1.00",
                     totalShareValue: '$1,000.00'
-                    transactions: [
-                        {
-                            date: "12-12-2012",
-                            amount: '+ $100.00'
-                        },
-                        {
-                            date:"03-21-2015",
-                            amount: '- $1,000.00'
-                        }
-                    ]
+                    transactions: [{
+                        date: "12-12-2012",
+                        amount: '+ $100.00'
+                    }, {
+                        date: "03-21-2015",
+                        amount: '- $1,000.00'
+                    }]
                 }
                 ctrl.ownedAssets.push(response);
                 self.changeView('homepage');
@@ -131,14 +128,40 @@ var app = {
         }
 
         self.pennyToAmount = function(amount) {
-            try {
-                this.amount = (amount / 100).toString();
-                return this.convertToFiat(this.amount);
-            } catch (err) {
-                console.log(err);
-                return amount;
+                try {
+                    this.amount = (amount / 100).toString();
+                    return this.convertToFiat(this.amount);
+                } catch (err) {
+                    console.log(err);
+                    return amount;
+                }
+            },
+
+            self.test = function() {
+                cordova.plugins.barcodeScanner.scan(
+                    function(result) {
+                        if (!result.cancelled) {
+                            if (result.format == "QR_CODE") {
+                                navigator.notification.prompt("Please enter name of data", function(input) {
+                                    var name = input.input1;
+                                    var value = result.text;
+
+                                    var data = localStorage.getItem("LocalData");
+                                    console.log(data);
+                                    data = JSON.parse(data);
+                                    data[data.length] = [name, value];
+
+                                    localStorage.setItem("LocalData", JSON.stringify(data));
+
+                                    alert("Done");
+                                });
+                            }
+                        }
+                    },
+                    function(error) {
+                        alert("Scanning failed: " + error);
+                    })
             }
-        },
 
         return self;
     },

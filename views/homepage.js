@@ -45,7 +45,10 @@ module.exports = function(ctrl) {
                             m("div", asset.amount)
                         ])
                     })
-                ])
+                ]),
+                m('btn', {
+                    onclick: ctrl.test.bind(this)
+                }, "TEST IT")
             ])
         ]),
     ]
