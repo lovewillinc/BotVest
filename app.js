@@ -23,14 +23,15 @@ var app = {
         self.currentAsset = null;
         self.ownedAssets = [];
         self.scannedAddress = null;
+        self.purchaseAmount = m.prop(0);
 
-        if(localStorage.account){
-        	web3Helper = require('./web3Helper');
+        if (localStorage.account) {
+            web3Helper = require('./web3Helper');
         }
 
         self.updateBalance = function() {
             web3Helper.getAccountBalance().then(function(balance) {
-                self.accountBalance = balance
+                self.accountBalance = balance;
                 self.doRedraw();
             })
         }
@@ -38,7 +39,7 @@ var app = {
         self.generateAccount = function() {
             self.showLoader('Generating your BotVest Account..')
             var privKey = new bitcore.PrivateKey().toString();
-            var userKey = new Buffer(privKey, 'hex')
+            var userKey = new Buffer(privKey, 'hex');
             var wallet = Wallet.fromPrivateKey(userKey);
             account = {
                 address: wallet.getAddressString(),
@@ -49,7 +50,7 @@ var app = {
             web3Helper = require('./web3Helper');
             //need to push account to chain and then fund from coinbase address
             setTimeout(function() {
-            	self.changeView('homepage')
+                self.changeView('homepage')
             }, 2000)
         }
 
@@ -66,7 +67,11 @@ var app = {
         self.doScanAction = function() {
             console.log("Now doing scan");
             self.scannedAddress = '123929AE23F';
+            self.changeView('purchase')
             return;
+        }
+
+        self.purchaseAsset = function() {
             web3Helper.sendransaction(self.scannedAddress, self.purchaseAmount).then(function(response) {
                 //now add the purchased asset to owned assets array
                 var response = {
@@ -74,16 +79,13 @@ var app = {
                     sharesOwned: "1000",
                     shareValue: "$1.00",
                     totalShareValue: '$1,000.00'
-                    transactions: [
-                        {
-                            date: "12-12-2012",
-                            amount: '+ $100.00'
-                        },
-                        {
-                            date:"03-21-2015",
-                            amount: '- $1,000.00'
-                        }
-                    ]
+                    transactions: [{
+                        date: "12-12-2012",
+                        amount: '+ $100.00'
+                    }, {
+                        date: "03-21-2015",
+                        amount: '- $1,000.00'
+                    }]
                 }
                 ctrl.ownedAssets.push(response);
                 self.changeView('homepage');
@@ -131,16 +133,16 @@ var app = {
         }
 
         self.pennyToAmount = function(amount) {
-            try {
-                this.amount = (amount / 100).toString();
-                return this.convertToFiat(this.amount);
-            } catch (err) {
-                console.log(err);
-                return amount;
-            }
-        },
+                try {
+                    this.amount = (amount / 100).toString();
+                    return this.convertToFiat(this.amount);
+                } catch (err) {
+                    console.log(err);
+                    return amount;
+                }
+            },
 
-        return self;
+            return self;
     },
     view: function(ctrl) {
         return views[ctrl.activeView](ctrl)
