@@ -1,4 +1,5 @@
 module.exports = function(ctrl) {
+    console.log("ctrl.scannedAsset.shareValue:", ctrl.convertYoSzabo(ctrl.scannedAsset.shareValue));
     return [m("[layout='column'][layout-align='start center']", [
         m("nav", [
             m("[layout='row'][layout-align='space-between center']", [
@@ -27,7 +28,7 @@ module.exports = function(ctrl) {
                 m(".item-purchase[layout='column'][layout-align='center start']", [
                     m(".title", ctrl.scannedAsset.name),
                     m("span.u-marginBottom-24", ctrl.scannedAsset.address),
-                    m(".balance-title", "$90,000.00"),
+                    m(".balance-title", ctrl.convertYoSzabo(ctrl.scannedAsset.shareValue)),
                     m("span", "Purchase price")
                 ])
             ]),
@@ -39,7 +40,7 @@ module.exports = function(ctrl) {
                     oninput: m.withAttr("value", ctrl.purchaseAmount),
                     value: ctrl.purchaseAmount()
                 }),
-                m("span.inputBalanceLabel", "Current Balance: " + ctrl.accountBalance)
+                m("span.inputBalanceLabel", "Current Balance: " + ctrl.dollarFormat(ctrl.accountBalance()))
             ]),
             m(".purchase.u-padding-0_16[layout='row'][layout-align='space-between center']", [
                 m("a.btn.btn-primary", {

@@ -1,3 +1,5 @@
+assetDictionary = require('./assetDictionary')
+console.log("assetDictionary", assetDictionary);
 Wallet = require('ethereumjs-wallet');
 m = require('mithril');
 Tx = require('ethereumjs-tx');
