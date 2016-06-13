@@ -64,7 +64,7 @@
     <feature name="BarcodeScanner">
         <param name="android-package" value="com.phonegap.plugins.barcodescanner.BarcodeScanner" />
     </feature>
-    <name>Hello World</name>
+    <name>BotVest</name>
     <description>
         Hello World sample application that responds to the deviceready event.
     </description>
