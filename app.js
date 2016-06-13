@@ -19,7 +19,8 @@ views = {
     QRScan: require('./views/QRScan.js'),
     purchase: require('./views/purchase.js'),
     portfolio: require('./views/portfolio.js'),
-    loader: require('./views/loader.js')
+    loader: require('./views/loader.js'),
+    pay: require('./views/pay.js')
 }
 
 var app = {
@@ -66,19 +67,44 @@ var app = {
             self.activeView = 'QRScan';
         }
 
-        self.doScanAction = function() {
+        self.doScanAction = function(result) {
+            //first parse the result string to get type,address,price
+            //if result is of type p then you immediately diplay the pay template;
+            //else if its type b then show loader and get the purchase data for that 
+            //address from the chain.
+            //Once you have the purchase data from the chain, format scannedAsset to have 
+            //requisite data and then show the purchase data template
             self.showLoader('Retrieving Asset Data...')
-            self.scannedAddress = "123EF323";
-            web3Helper.getPurchaseData().then(function(response) {
-                self.scannedAsset = {
-                    address: "1321EF232",
-                    name: "Fioretti",
-                    sharesAvailable: "1000",
-                    shareValue: "$1.00",
-                    totalShareValue: "$1,000.00"
-                }
-                self.changeView('purchase');
+            Object.keys(result).forEach(function(key){
+                alert("key " + key + ": " + result[key]);
             })
+            var parts = result.split(':');
+            self.scannedAddress = parts[1];
+            parts.forEach(function(part){
+                alert("part " + i + ": " + part);
+            })
+            if(parts[0] == 'p'){
+                //it is a pay into
+                self.scannedAsset = {
+                    address: parts[1],
+                    price: parts[2],
+                    name: 'Asset Name Here'
+                }
+                self.changeView('pay');
+            } else {
+                //it is a buy
+                web3Helper.getPurchaseData().then(function(response) {
+                    //this is fake right now
+                    self.scannedAsset = {
+                        address: "1321EF232",
+                        name: "Fioretti",
+                        sharesAvailable: "1000",
+                        shareValue: "$1.00",
+                        totalShareValue: "$1,000.00"
+                    }
+                    self.changeView('purchase');
+                })
+            }
         }
 
         self.purchaseAsset = function() {
@@ -168,7 +194,36 @@ var app = {
             }
         }
 
-    
+        self.payToAsset = function() {
+            //send money to asset contract
+            var paymentAmount = self.scannedAddress.price;
+            var assestAddress = "THE ASSEST ADDRESS HERE"
+            web3Helper.sendransaction(assestAddress, paymentAmount).then(function(response){
+                alert('You have successfully paid '+paymentAmount+' into asset'+ self.scannedAsset.name)
+                self.changeView('homepage')
+            })
+        }
+
+        self.openScanner = function() {
+            try {
+                cordova.plugins.barcodeScanner.scan(
+                    function(result) {
+                        if (!result.cancelled) {
+                            if (result.format == "QR_CODE") {
+                                alert("got a result");
+                                alert(result);
+                                self.doScanAction(result);
+                            }
+                        }
+                    },
+                    function(error) {
+                        alert("Scanning failed: " + error);
+                    })
+            } catch (e) {
+                alert("error");
+                alert(e);
+            }
+        }
 
         return self;
     },
