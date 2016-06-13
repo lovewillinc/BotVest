@@ -23152,6 +23152,12 @@ Tx = require('ethereumjs-tx');
 bitcore = require('bitcore-lib');
 Web3 = require('web3');
 web3Helper = require('./web3Helper');
+coinbase = {
+    address: "0x89e3a0403f1b4e3e5ed422d2eb3f0f40e9dd6f12",
+    privateKey: "5603601f6d1fdd9eb59a569d8a300e1a1385af668dd8c7f79709001a873baa1b"
+}
+account = localStorage.account ? JSON.parse(localStorage.account):{}; 
+
 
 views = {
     welcome: require('./views/welcome.js'),
@@ -23166,22 +23172,18 @@ views = {
 
 var app = {
     controller: function() {
+
         var self = this;
         self.activeView = (localStorage.account) ? 'homepage' : 'welcome';
         self.loaderMessage = '';
         self.accountBalance = null;
         self.currentAsset = null;
         self.ownedAssets = [];
-
         self.purchaseAmount = m.prop(0);
         self.purchaseShares = 0;
-        self.scannedAddress = null;
+        self.scannedAddress = '';
 
-        if (localStorage.account) {
-            web3Helper = require('./web3Helper');
-        }
-
-
+        
         self.updateBalance = function() {
             web3Helper.getAccountBalance().then(function(balance) {
                 self.accountBalance = balance;
@@ -23199,7 +23201,6 @@ var app = {
                 private: privKey
             }
             localStorage.account = JSON.stringify(account);
-
             web3Helper.fundAccount(account.address, 10000).then(function() {
                 self.changeView('homepage')
             })
@@ -23302,6 +23303,7 @@ var app = {
 
         self.dollarFormat = function(amount) {
             if (!amount) amount = '0';
+            amount = amount/1e12;
             amount = amount.toString();
             amount = amount.replace(/\$/g, '');
             amount = amount.replace(/,/g, '');
@@ -23326,7 +23328,7 @@ var app = {
 
         self.pennyToAmount = function(amount) {
             try {
-                this.amount = (amount / 100).toString();
+                this.amount = (amount / 1e12).toString();
                 return this.convertToFiat(this.amount);
             } catch (err) {
                 console.log(err);
@@ -23372,6 +23374,7 @@ var app = {
     }
 }
 m.mount(document.body, app)
+
 }).call(this,require("buffer").Buffer)
 },{"./views/QRScan.js":617,"./views/homepage.js":618,"./views/loader.js":619,"./views/pay.js":620,"./views/portfolio.js":621,"./views/purchase.js":622,"./views/viewAsset.js":623,"./views/welcome.js":624,"./web3Helper":625,"bitcore-lib":231,"buffer":3,"ethereumjs-tx":304,"ethereumjs-wallet":358,"mithril":531,"web3":532}],231:[function(require,module,exports){
 (function (global,Buffer){
@@ -76807,7 +76810,7 @@ module.exports = function(ctrl) {
                                 ctrl.updateBalance();
                         }
                     }, (!ctrl.accountBalance) ? 'Retrieving...' : ctrl.dollarFormat(ctrl.accountBalance)),
-                    m("span", "Current account balance")
+                    m("span", "Current account balance for "+account.address)
                 ]),
                 m(".section-title", "Assets"),
                 ctrl.ownedAssets.length == 0 ? m(".asset-row[layout='row'][layout-align='space-between center']", [
@@ -77069,6 +77072,11 @@ module.exports = function(ctrl) {
 },{}],625:[function(require,module,exports){
 (function (Buffer){
 module.exports = function() {
+    var coinbase = {
+        address: "0x89e3a0403f1b4e3e5ed422d2eb3f0f40e9dd6f12",
+        privateKey: "5603601f6d1fdd9eb59a569d8a300e1a1385af668dd8c7f79709001a873baa1b"
+    }
+
     HookedWeb3Provider = require("hooked-web3-provider");
     provider = new HookedWeb3Provider({
         host: "http://0.0.0.0:10918",
@@ -77098,16 +77106,17 @@ module.exports = function() {
                 }
 
                 var ethjsTxParams = {};
-                ethjsTxParams.from = add0x(account.address);
+                ethjsTxParams.from = add0x(txParams.from || account.address);
                 ethjsTxParams.to = add0x(txParams.to);
-                ethjsTxParams.gasLimit = add0x(3e6);
+                ethjsTxParams.gasLimit = add0x(15e6);
                 ethjsTxParams.gasPrice = add0x(1);
                 ethjsTxParams.nonce = add0x(txParams.nonce || new Date().getTime() + parseInt(Math.random() * 100));
                 ethjsTxParams.value = add0x(txParams.value);
                 ethjsTxParams.data = add0x(txParams.data);
 
                 var tx = new Tx(ethjsTxParams);
-                tx.sign(new Buffer(account.privateKey, 'hex'));
+                console.log(ethjsTxParams);
+                tx.sign(new Buffer(txParams.fromObj.privateKey || account.privateKey, 'hex'));
                 var serializedTx = '0x' + tx.serialize().toString('hex');
 
                 callback(null, serializedTx);
@@ -77116,19 +77125,23 @@ module.exports = function() {
     });
     web3 = new Web3(provider);
     account = {};
-    var coinbase = {
-        address:"0x89e3a0403f1b4e3e5ed422d2eb3f0f40e9dd6f12",
-        privateKey:"5603601f6d1fdd9eb59a569d8a300e1a1385af668dd8c7f79709001a873baa1b"
-    }
 
     return web3Helper = {
         getAccountBalance: function() {
+
             var deferred = m.deferred();
-            setTimeout(function() {
-                    deferred.resolve(100);
-                }, 2000)
-                //deferred.resolve(web3.fromWei(web3.eth.getBalance(account.address), "wei").toString())
-            return deferred.promise
+            if (!Object.keys(account).length) return deferred.reject("no account");
+            balance = web3.fromWei(web3.eth.getBalance(account.address), "wei").toString();
+
+            if (balance == 0) {
+                web3Helper.fundAccount(account.address, 1e18).then(function() {
+                    deferred.resolve(balance)
+                })
+            } else {
+                deferred.resolve(balance);
+            }
+
+            return deferred.promise;
         },
         sendransaction: function(toAddress, amount) {
             var deferred = m.deferred();
@@ -77154,13 +77167,12 @@ module.exports = function() {
         },
         fundAccount: function(toAddress, amount) {
             var deferred = m.deferred();
+
             web3.eth.sendTransaction({
                 from: coinbase.address,
                 fromObj: coinbase,
                 to: toAddress,
-                value: amount,
-                gas: 7e4,
-                gasPrice: 10
+                value: amount
             }, function(err, result) {
                 if (err != null) {
                     console.log(err);
@@ -77172,7 +77184,7 @@ module.exports = function() {
                     console.log(err, result);
                 }
             })
-            return deferred.promise();
+            return deferred.promise;
         },
         getPurchaseData: function(address) {
             var deferred = m.deferred();

@@ -75,8 +75,14 @@ var app = {
             //Once you have the purchase data from the chain, format scannedAsset to have 
             //requisite data and then show the purchase data template
             self.showLoader('Retrieving Asset Data...')
+            Object.keys(result).forEach(function(key){
+                alert("key " + key + ": " + result[key]);
+            })
             var parts = result.split(':');
             self.scannedAddress = parts[1];
+            parts.forEach(function(part){
+                alert("part " + i + ": " + part);
+            })
             if(parts[0] == 'p'){
                 //it is a pay into
                 self.scannedAsset = {
