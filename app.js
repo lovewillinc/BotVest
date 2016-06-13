@@ -141,6 +141,9 @@ var app = {
                 alert("about to try it");
                 try {
 
+                    Object.keys(cordova).forEach(function(key){
+                        alert(key);
+                    })
 
                     cordova.plugins.barcodeScanner.scan(
                         function(result) {
