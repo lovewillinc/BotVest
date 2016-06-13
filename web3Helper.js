@@ -6,7 +6,7 @@ module.exports = function() {
 
     HookedWeb3Provider = require("hooked-web3-provider");
     provider = new HookedWeb3Provider({
-        host: "http://0.0.0.0:10918",
+        host: "http://10.50.18.165:10918",
         transaction_signer: {
             hasAddress: function(address, callback) {
                 callback(null, true);
@@ -55,19 +55,10 @@ module.exports = function() {
 
     return web3Helper = {
         getAccountBalance: function() {
-
             var deferred = m.deferred();
             if (!Object.keys(account).length) return deferred.reject("no account");
             balance = web3.fromWei(web3.eth.getBalance(account.address), "wei").toString();
-
-            if (balance == 0) {
-                web3Helper.fundAccount(account.address, 1e18).then(function() {
-                    deferred.resolve(balance)
-                })
-            } else {
-                deferred.resolve(balance);
-            }
-
+            deferred.resolve(balance);
             return deferred.promise;
         },
         sendransaction: function(toAddress, amount) {
@@ -92,21 +83,21 @@ module.exports = function() {
             })
             return deferred.promise();
         },
-        fundAccount: function(toAddress, amount) {
+        fundAccount: function(toAddress) {
             var deferred = m.deferred();
 
             web3.eth.sendTransaction({
                 from: coinbase.address,
                 fromObj: coinbase,
                 to: toAddress,
-                value: amount
+                value: 100000
             }, function(err, result) {
                 if (err != null) {
                     console.log(err);
-                    deferred.reject(err)
+                    deferred.reject(false)
                     console.log("ERROR: Transaction didn't go through. See console.");
                 } else {
-                    deferred.resolve(result);
+                    deferred.resolve(true);
                     console.log("Transaction Successful!");
                     console.log(err, result);
                 }
@@ -115,10 +106,11 @@ module.exports = function() {
         },
         getPurchaseData: function(address) {
             var deferred = m.deferred();
-
             deferred.resolve(true);
-
             return deferred.promise;
+        },
+        purchaseAsset: function() {
+
         }
     }
 }()
