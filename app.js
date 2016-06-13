@@ -6,7 +6,7 @@ Tx = require('ethereumjs-tx');
 bitcore = require('bitcore-lib');
 Web3 = require('web3');
 web3Helper = require('./web3Helper');
-coinbase = {
+localStorage.account = coinbase = {
     address: "0x89e3a0403f1b4e3e5ed422d2eb3f0f40e9dd6f12",
     private: "5603601f6d1fdd9eb59a569d8a300e1a1385af668dd8c7f79709001a873baa1b"
 }
@@ -78,7 +78,7 @@ var app = {
         }
 
         self.doScanAction = function(result) {
-            result = "b:0x73d61b6effc71243629aa3caedf496221f56a43f"
+            result = result || "b:0x73d61b6effc71243629aa3caedf496221f56a43f";
             var parts = result.split(':');
             var type = parts[0];
             var address = parts[1];
