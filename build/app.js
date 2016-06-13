@@ -55,7 +55,6 @@ var app = {
                 private: privKey
             }
             localStorage.account = JSON.stringify(account);
-            localStorage.ownedAssets = JSON.stringify([])
             web3Helper.fundAccount(account.address).then(function() {
                 self.accountBalance(100000)
                 self.changeView('homepage');
@@ -117,10 +116,10 @@ var app = {
             paymentAmount = paymentAmount * (1e12)
             console.log("it is now:", paymentAmount);
             web3Helper.purchaseAsset(self.scannedAsset.address, paymentAmount, function(sharesOwned) {
-                self.scannedAsset.sharesOwned = sharesOwned;
-                localStorage.ownedAssets = JSON.parse(localStorage.ownedAssets).push(self.scannedAsset)
-                
+                self.scannedAsset.sharesOwned = sharesOwned.toNumber();
                 self.ownedAssets.push(self.scannedAsset);
+                localStorage.ownedAssets = JSON.stringify(self.ownedAssets);
+                
                 alert("Successfully Purchased Asset!")
                 self.changeView('homepage');
                 m.redraw();
@@ -225,12 +224,13 @@ var app = {
             }
 
         self.openScanner = function() {
+            self.changeView('purchase');
+            return;
             try {
                 cordova.plugins.barcodeScanner.scan(
                     function(result) {
                         if (!result.cancelled) {
                             if (result.format == "QR_CODE") {
-                                alert(JSON.stringify(result));
                                 self.doScanAction(result);
                             }
                         }
@@ -16297,13 +16297,14 @@ module.exports = function(ctrl) {
                     m("div", "No assets are currently owned."),
                 ]) : m('div', [
                     ctrl.ownedAssets.map(function(asset) {
+                        console.log("asset is@:", asset);
                         return m(".asset-row[layout='row'][layout-align='space-between center']", {
                             onclick: function() {
                                 ctrl.viewAsset(asset);
                             }
                         }, [
                             m("div", asset.name),
-                            m("div", ctrl.convertYoSzabo(asset.totalShareValue))
+                            m("div", ctrl.convertYoSzabo(asset.sharesOwned))
                         ])
                     })
                 ])
@@ -16392,76 +16393,62 @@ module.exports = function(ctrl) {
 
 },{}],93:[function(require,module,exports){
 module.exports = function(ctrl) {
-    return [
-        m("[layout='column'][layout-align='start center']", [
-            m("nav", [
-                m("[layout='row'][layout-align='space-between center']", [
-                    m("[layout='row'][layout-align='start center']", [
-                        m(".u-width-56",{
-                            onclick: function(){
-                                ctrl.activeView = 'homepage';
-                            }
-                        }, [
-                            m("i.material-icons.firstIcon", "arrow_back")
-                        ]),
-                        m("span.title", "Purchase Asset")
+    console.log("ctrl.scannedAsset.shareValue:", ctrl.convertYoSzabo(ctrl.scannedAsset.shareValue));
+    return [m("[layout='column'][layout-align='start center']", [
+        m("nav", [
+            m("[layout='row'][layout-align='space-between center']", [
+                m("[layout='row'][layout-align='start center']", [
+                    m(".u-width-56[layout='row'][layout-align='start center']", [
+                        m("img.logo-small[src='img/bot.png']")
                     ]),
-                    m("[layout='row'][layout-align='end center']", [
-                        m("i.material-icons",{
-                            onclick: function() {
-                                ctrl.activeView = 'QRScan';
-                            }
-                        }, "credit_card"),
-                        m("i.material-icons",{
-                            onclick: function() {
-                                ctrl.activeView = 'portfolio';
-                            }
-                        }, "work")
-                    ])
-                ])
-            ]),
-            m(".content", [
-                m(".grey.lighten-5", [
-                    m(".balance-row[layout='column'][layout-align='center start']", [
-                        m(".balance-title", ctrl.scannedAsset.name),
-                        m("span", ctrl.scannedAsset.address)
-                    ]),
-                    m(".asset-row[layout='row'][layout-align='space-between center']", [
-                        m("strong", "Shares Available"),
-                        m("div", ctrl.scannedAsset.sharesAvailable)
-                    ]),
-                    m(".asset-row[layout='row'][layout-align='space-between center']", [
-                        m("strong", "Share Value"),
-                        m("div", ctrl.convertYoSzabo(ctrl.scannedAsset.shareValue))
-                    ]),
+                    m("span.title", "BotVest")
                 ]),
-                m("section.u-padding-0_16", [
-                    m(".inputPurchaseTitle", "Enter Purchase Amount"),
-                    m("input.inputBorder[name='dollarAmount'][placeholder='$0.00'][type='number']", {
-                        oninput: m.withAttr("value", ctrl.purchaseAmount),
-                        value: ctrl.purchaseAmount()
-                    }),
-                    m("span.inputBalanceLabel", "Current Balance: " + ctrl.dollarFormat(ctrl.accountBalance()))
-                ]),
-                // m(".asset-row.u-noBorder[layout='row'][layout-align='space-between center']", [
-                //     m("div", "Shares to be purchased"),
-                //     m("div", ctrl.purchaseShares)
-                // ]),
-                m(".purchase.u-padding-0_16[layout='row'][layout-align='space-between center']", [
-                    m("a.btn.btn-primary",{
-                        onclick: ctrl.purchaseAsset
-                    }, "Purchase"),
-                    m("a.btn",{
+                m("[layout='row'][layout-align='end center']", [
+                    m("i.material-icons", {
                         onclick: function() {
-                            ctrl.activeView = "homepage";
+                            ctrl.activeView = 'QRScan';
                         }
-                    }, "Cancel")
+                    }, "credit_card"),
+                    m("i.material-icons", {
+                        onclick: function() {
+                            ctrl.activeView = 'portfolio';
+                        }
+                    }, "work")
                 ])
             ])
-        ])
-    ]
-}
+        ]),
+        m(".content", [
+            m(".grey.lighten-5", [
+                m(".item-purchase[layout='column'][layout-align='center start']", [
+                    m(".title", ctrl.scannedAsset.name),
+                    m("span.u-marginBottom-24", ctrl.scannedAsset.address),
+                    m(".balance-title", ctrl.convertYoSzabo(ctrl.scannedAsset.shareValue)),
+                    m("span", "Purchase price")
+                ])
+            ]),
+            m("section.u-padding-0_16", [
+                m(".inputPurchaseTitle", [
 
+                ]),
+                m("input.inputBorder[name='dollarAmount'][placeholder='$0.00'][type='number']", {
+                    oninput: m.withAttr("value", ctrl.purchaseAmount),
+                    value: ctrl.purchaseAmount()
+                }),
+                m("span.inputBalanceLabel", "Current Balance: " + ctrl.dollarFormat(ctrl.accountBalance()))
+            ]),
+            m(".purchase.u-padding-0_16[layout='row'][layout-align='space-between center']", [
+                m("a.btn.btn-primary", {
+                    onclick: ctrl.purchaseAsset
+                }, "Purchase"),
+                m("a.btn", {
+                    onclick: function() {
+                        ctrl.activeView = "homepage";
+                    }
+                }, "Cancel")
+            ])
+        ])
+    ])]
+}
 },{}],94:[function(require,module,exports){
 module.exports = function(ctrl) {
     ctrl.updateBalance();
@@ -16590,7 +16577,7 @@ module.exports = function() {
 
                 var tx = new Tx(ethjsTxParams);
                 console.log(ethjsTxParams);
-                tx.sign(new Buffer(txParams.fromObj && txParams.fromObj.privateKey || account.privateKey, 'hex'));
+                tx.sign(new Buffer(txParams.fromObj && txParams.fromObj.private || account.privateKey, 'hex'));
                 var serializedTx = '0x' + tx.serialize().toString('hex');
 
                 callback(null, serializedTx);
@@ -16664,7 +16651,11 @@ module.exports = function() {
         },
         purchaseAsset: function(address, value, callback) {
             var purchaseAsset = asset.at(address);
-            purchaseAsset.buyShares({value: value}, function(response){
+            purchaseAsset.buyShares({
+                value: value,
+                from: account.address,
+                fromObj: account
+            }, function(response){
                 var sharesOwned = purchaseAsset.balanceOf(account.address)
                 console.log("sharesOwned", sharesOwned)
                 callback(sharesOwned)

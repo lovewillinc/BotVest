@@ -34,13 +34,14 @@ module.exports = function(ctrl) {
                     m("div", "No assets are currently owned."),
                 ]) : m('div', [
                     ctrl.ownedAssets.map(function(asset) {
+                        console.log("asset is@:", asset);
                         return m(".asset-row[layout='row'][layout-align='space-between center']", {
                             onclick: function() {
                                 ctrl.viewAsset(asset);
                             }
                         }, [
                             m("div", asset.name),
-                            m("div", ctrl.convertYoSzabo(asset.totalShareValue))
+                            m("div", ctrl.convertYoSzabo(asset.sharesOwned))
                         ])
                     })
                 ])

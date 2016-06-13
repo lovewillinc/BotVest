@@ -55,7 +55,6 @@ var app = {
                 private: privKey
             }
             localStorage.account = JSON.stringify(account);
-            localStorage.ownedAssets = JSON.stringify([])
             web3Helper.fundAccount(account.address).then(function() {
                 self.accountBalance(100000)
                 self.changeView('homepage');
@@ -117,10 +116,10 @@ var app = {
             paymentAmount = paymentAmount * (1e12)
             console.log("it is now:", paymentAmount);
             web3Helper.purchaseAsset(self.scannedAsset.address, paymentAmount, function(sharesOwned) {
-                self.scannedAsset.sharesOwned = sharesOwned;
-                localStorage.ownedAssets = JSON.parse(localStorage.ownedAssets).push(self.scannedAsset)
-                
+                self.scannedAsset.sharesOwned = sharesOwned.toNumber();
                 self.ownedAssets.push(self.scannedAsset);
+                localStorage.ownedAssets = JSON.stringify(self.ownedAssets);
+                
                 alert("Successfully Purchased Asset!")
                 self.changeView('homepage');
                 m.redraw();
@@ -230,7 +229,6 @@ var app = {
                     function(result) {
                         if (!result.cancelled) {
                             if (result.format == "QR_CODE") {
-                                alert(JSON.stringify(result));
                                 self.doScanAction(result);
                             }
                         }
