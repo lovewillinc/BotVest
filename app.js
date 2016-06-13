@@ -51,6 +51,10 @@ var app = {
 
         self.generateAccount = function() {
             self.showLoader('Generating your BotVest Account..')
+            localStorage.account = JSON.stringify(coinbase);
+            self.changeView('homepage');
+
+            
             var privKey = new bitcore.PrivateKey().toString();
             var userKey = new Buffer(privKey, 'hex');
             var wallet = Wallet.fromPrivateKey(userKey);
