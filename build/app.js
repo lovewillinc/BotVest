@@ -76841,18 +76841,20 @@ module.exports = function(ctrl) {
             m("nav", [
                 m("[layout='row'][layout-align='space-between center']", [
                     m("[layout='row'][layout-align='start center']", [
-                        m(".u-width-56", ""),
+                        m(".u-width-56[layout='row'][layout-align='start center']", [
+                            m("img.logo-small[src='img/navBot.png']")
+                        ]),
                         m("span.title", "BotVest")
                     ]),
                     m("[layout='row'][layout-align='end center']", [
                         m("i.material-icons", {
                             onclick: function() {
-                                ctrl.activeView = 'QRScan'
+                                ctrl.activeView = 'QRScan';
                             }
                         }, "credit_card"),
                         m("i.material-icons", {
                             onclick: function() {
-                                ctrl.activeView = 'portfolio'
+                                ctrl.activeView = 'portfolio';
                             }
                         }, "work")
                     ])
@@ -76885,7 +76887,6 @@ module.exports = function(ctrl) {
         ]),
     ]
 }
-
 },{}],621:[function(require,module,exports){
 module.exports = function(ctrl) {
     return [
