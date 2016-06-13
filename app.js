@@ -222,12 +222,13 @@ var app = {
             }
 
         self.openScanner = function() {
+            self.changeView('purchase');
+            return;
             try {
                 cordova.plugins.barcodeScanner.scan(
                     function(result) {
                         if (!result.cancelled) {
                             if (result.format == "QR_CODE") {
-                                alert(JSON.stringify(result));
                                 self.doScanAction(result);
                             }
                         }
