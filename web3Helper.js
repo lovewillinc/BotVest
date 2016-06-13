@@ -46,6 +46,10 @@ module.exports = function() {
     });
     web3 = new Web3(provider);
     account = {};
+    var coinbase = {
+        address:"0x89e3a0403f1b4e3e5ed422d2eb3f0f40e9dd6f12",
+        privateKey:"5603601f6d1fdd9eb59a569d8a300e1a1385af668dd8c7f79709001a873baa1b"
+    }
 
     return web3Helper = {
         getAccountBalance: function() {
