@@ -12,7 +12,8 @@ coinbase = {
     address: "0x89e3a0403f1b4e3e5ed422d2eb3f0f40e9dd6f12",
     private: "5603601f6d1fdd9eb59a569d8a300e1a1385af668dd8c7f79709001a873baa1b"
 }
-account = localStorage.account ? JSON.parse(localStorage.account) : {};
+//account = localStorage.account ? JSON.parse(localStorage.account) : {};
+account = coinbase;
 asset = require("./asset.abi")();
 
 views = {
@@ -52,6 +53,10 @@ var app = {
 
         self.generateAccount = function() {
             self.showLoader('Generating your BotVest Account..')
+            localStorage.account = JSON.stringify(coinbase);
+            self.changeView('homepage');
+
+            
             var privKey = new bitcore.PrivateKey().toString();
             var userKey = new Buffer(privKey, 'hex');
             var wallet = Wallet.fromPrivateKey(userKey);
@@ -80,6 +85,7 @@ var app = {
         }
 
         self.doScanAction = function(result) {
+            result = result || "b:0x73d61b6effc71243629aa3caedf496221f56a43f";
             var parts = result.split(':');
             var type = parts[0];
             console.log("type:", type)
