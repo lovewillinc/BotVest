@@ -4,7 +4,6 @@ Tx = require('ethereumjs-tx');
 bitcore = require('bitcore-lib');
 Web3 = require('web3');
 
-
 views = {
     welcome: require('./views/welcome.js'),
     homepage: require('./views/homepage.js'),
@@ -72,8 +71,19 @@ var app = {
                 //now add the purchased asset to owned assets array
                 var response = {
                     name: 'Fioretti',
-                    shares: 1000,
-                    sharePrice: 1
+                    sharesOwned: "1000",
+                    shareValue: "$1.00",
+                    totalShareValue: '$1,000.00'
+                    transactions: [
+                        {
+                            date: "12-12-2012",
+                            amount: '+ $100.00'
+                        },
+                        {
+                            date:"03-21-2015",
+                            amount: '- $1,000.00'
+                        }
+                    ]
                 }
                 ctrl.ownedAssets.push(response);
                 self.changeView('homepage');
@@ -95,6 +105,41 @@ var app = {
             m.startComputation();
             m.endComputation();
         }
+
+        self.dollarFormat = function(amount) {
+            if (!amount) amount = '0';
+            amount = amount.toString();
+            amount = amount.replace(/\$/g, '');
+            amount = amount.replace(/,/g, '');
+
+            var dollars = amount.split('.')[0],
+                cents = (amount.split('.')[1] || '') + '00';
+            var dollars = dollars.split('').reverse().join('')
+                .replace(/(\d{3}(?!$))/g, '$1,')
+                .split('').reverse().join('');
+            return '$' + dollars + '.' + cents.slice(0, 2);
+        }
+
+        self.amountToPenny = function(amount) {
+            try {
+                this.amount = this.floatToAmount(parseFloat(amount).toFixed(2));
+                return parseFloat(this.amount.replace(".", ""));
+            } catch (err) {
+                console.log(err);
+                return amount
+            }
+        }
+
+        self.pennyToAmount = function(amount) {
+            try {
+                this.amount = (amount / 100).toString();
+                return this.convertToFiat(this.amount);
+            } catch (err) {
+                console.log(err);
+                return amount;
+            }
+        },
+
         return self;
     },
     view: function(ctrl) {

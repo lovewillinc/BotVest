@@ -6,7 +6,6 @@ Tx = require('ethereumjs-tx');
 bitcore = require('bitcore-lib');
 Web3 = require('web3');
 
-
 views = {
     welcome: require('./views/welcome.js'),
     homepage: require('./views/homepage.js'),

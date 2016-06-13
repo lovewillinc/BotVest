@@ -1,8 +1,13 @@
 module.exports = function(ctrl) {
     return [
-        m("h3", "Welcome to BotVest"),
-        m("a", {
-            onclick: ctrl.generateAccount
-        }, "Tap here to generate account")
+        m("[layout='column'][layout-align='center center']", [
+            m(".logo-big", ""),
+            m("a.btn.u-width-314", {
+                onclick: ctrl.generateAccount
+            }, "Create Account"),
+            m("p.u-width-314.center", "Click the button above to generate a new investment account.")
+        ])
+
     ]
+
 }
