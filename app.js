@@ -36,7 +36,6 @@ var app = {
         self.purchaseShares = 0;
         self.scannedAddress = '';
 
-        
         self.updateBalance = function() {
             web3Helper.getAccountBalance().then(function(balance) {
                 self.accountBalance(balance);
@@ -68,12 +67,6 @@ var app = {
         }
 
         self.doScanAction = function(result) {
-            //first parse the result string to get type,address,price
-            //if result is of type p then you immediately diplay the pay template;
-            //else if its type b then show loader and get the purchase data for that 
-            //address from the chain.
-            //Once you have the purchase data from the chain, format scannedAsset to have 
-            //requisite data and then show the purchase data template
             var parts = result.split(':');
             var type = parts[0];
             var address = parts[1];
@@ -176,7 +169,7 @@ var app = {
             //send money to asset contract
             var paymentAmount = self.scannedAddress.price;
             var assestAddress = "THE ASSEST ADDRESS HERE"
-            web3Helper.sendransaction(assestAddress, paymentAmount).then(function(response){
+            web3Helper.sendTransaction(assestAddress, paymentAmount).then(function(response){
                 alert('You have successfully paid '+paymentAmount+' into asset'+ self.scannedAsset.name)
                 self.changeView('homepage')
             })
