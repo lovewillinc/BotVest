@@ -11,7 +11,6 @@ coinbase = {
     privateKey: "5603601f6d1fdd9eb59a569d8a300e1a1385af668dd8c7f79709001a873baa1b"
 }
 account = localStorage.account ? JSON.parse(localStorage.account) : {};
-
 asset = require("./asset.abi")();
 
 views = {
@@ -231,8 +230,7 @@ var app = {
                     function(result) {
                         if (!result.cancelled) {
                             if (result.format == "QR_CODE") {
-                                alert("got a result");
-                                alert(result);
+                                alert(JSON.stringify(result));
                                 self.doScanAction(result);
                             }
                         }
