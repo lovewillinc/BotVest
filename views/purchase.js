@@ -5,7 +5,7 @@ module.exports = function(ctrl) {
             m("[layout='row'][layout-align='space-between center']", [
                 m("[layout='row'][layout-align='start center']", [
                     m(".u-width-56[layout='row'][layout-align='start center']", [
-                        m("img.logo-small[src='img/bot.png']")
+                        m("img.logo-small[src='img/navBot.png']")
                     ]),
                     m("span.title", "BotVest")
                 ]),
