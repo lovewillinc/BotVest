@@ -73,7 +73,7 @@ var app = {
                     name: 'Fioretti',
                     sharesOwned: "1000",
                     shareValue: "$1.00",
-                    totalShareValue: '$1,000.00'
+                    totalShareValue: '$1,000.00',
                     transactions: [{
                         date: "12-12-2012",
                         amount: '+ $100.00'

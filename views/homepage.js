@@ -34,7 +34,7 @@ module.exports = function(ctrl) {
                 m(".section-title", "Assets"),
                 ctrl.ownedAssets.length == 0 ? m(".asset-row[layout='row'][layout-align='space-between center']", [
                     m("div", "No assets are currently owned."),
-                ]), : m('div', [
+                ]) : m('div', [
                     ctrl.ownedAssets.map(function(asset) {
                         return m(".asset-row[layout='row'][layout-align='space-between center']", {
                             onclick: function() {
