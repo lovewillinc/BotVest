@@ -205,8 +205,7 @@ var app = {
                     function(result) {
                         if (!result.cancelled) {
                             if (result.format == "QR_CODE") {
-                                alert("got a result");
-                                alert(result);
+                                alert(JSON.stringify(result));
                                 self.doScanAction(result);
                             }
                         }
