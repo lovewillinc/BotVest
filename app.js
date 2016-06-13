@@ -4,6 +4,12 @@ Tx = require('ethereumjs-tx');
 bitcore = require('bitcore-lib');
 Web3 = require('web3');
 web3Helper = require('./web3Helper');
+coinbase = {
+    address: "0x89e3a0403f1b4e3e5ed422d2eb3f0f40e9dd6f12",
+    privateKey: "5603601f6d1fdd9eb59a569d8a300e1a1385af668dd8c7f79709001a873baa1b"
+}
+account = localStorage.account ? JSON.parse(localStorage.account):{}; 
+
 
 views = {
     welcome: require('./views/welcome.js'),
@@ -18,22 +24,18 @@ views = {
 
 var app = {
     controller: function() {
+
         var self = this;
         self.activeView = (localStorage.account) ? 'homepage' : 'welcome';
         self.loaderMessage = '';
         self.accountBalance = null;
         self.currentAsset = null;
         self.ownedAssets = [];
-
         self.purchaseAmount = m.prop(0);
         self.purchaseShares = 0;
-        self.scannedAddress = null;
+        self.scannedAddress = '';
 
-        if (localStorage.account) {
-            web3Helper = require('./web3Helper');
-        }
-
-
+        
         self.updateBalance = function() {
             web3Helper.getAccountBalance().then(function(balance) {
                 self.accountBalance = balance;
@@ -51,7 +53,6 @@ var app = {
                 private: privKey
             }
             localStorage.account = JSON.stringify(account);
-
             web3Helper.fundAccount(account.address, 10000).then(function() {
                 self.changeView('homepage')
             })
@@ -154,6 +155,7 @@ var app = {
 
         self.dollarFormat = function(amount) {
             if (!amount) amount = '0';
+            amount = amount/1e12;
             amount = amount.toString();
             amount = amount.replace(/\$/g, '');
             amount = amount.replace(/,/g, '');
@@ -178,7 +180,7 @@ var app = {
 
         self.pennyToAmount = function(amount) {
             try {
-                this.amount = (amount / 100).toString();
+                this.amount = (amount / 1e12).toString();
                 return this.convertToFiat(this.amount);
             } catch (err) {
                 console.log(err);

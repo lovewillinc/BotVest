@@ -29,7 +29,7 @@ module.exports = function(ctrl) {
                                 ctrl.updateBalance();
                         }
                     }, (!ctrl.accountBalance) ? 'Retrieving...' : ctrl.dollarFormat(ctrl.accountBalance)),
-                    m("span", "Current account balance")
+                    m("span", "Current account balance for "+account.address)
                 ]),
                 m(".section-title", "Assets"),
                 ctrl.ownedAssets.length == 0 ? m(".asset-row[layout='row'][layout-align='space-between center']", [
