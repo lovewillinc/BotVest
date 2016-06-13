@@ -55,7 +55,6 @@ module.exports = function() {
 
     return web3Helper = {
         getAccountBalance: function() {
-
             var deferred = m.deferred();
             if (!Object.keys(account).length) return deferred.reject("no account");
             balance = web3.fromWei(web3.eth.getBalance(account.address), "wei").toString();
@@ -67,7 +66,6 @@ module.exports = function() {
             } else {
                 deferred.resolve(balance);
             }
-
             return deferred.promise;
         },
         sendransaction: function(toAddress, amount) {
@@ -115,10 +113,11 @@ module.exports = function() {
         },
         getPurchaseData: function(address) {
             var deferred = m.deferred();
-
             deferred.resolve(true);
-
             return deferred.promise;
+        },
+        purchaseAsset: function() {
+
         }
     }
 }()

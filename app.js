@@ -74,33 +74,35 @@ var app = {
             //address from the chain.
             //Once you have the purchase data from the chain, format scannedAsset to have 
             //requisite data and then show the purchase data template
-            self.showLoader('Retrieving Asset Data...')
-            Object.keys(result).forEach(function(key){
-                alert("key " + key + ": " + result[key]);
-            })
             var parts = result.split(':');
-            self.scannedAddress = parts[1];
-            parts.forEach(function(part){
-                alert("part " + i + ": " + part);
-            })
-            if(parts[0] == 'p'){
+            var type = parts[0];
+            var address = parts[1];
+            var price = parts[2];
+            var name = parts[3]
+            self.scannedAddress = address;
+
+            if(type == 'p'){
                 //it is a pay into
                 self.scannedAsset = {
-                    address: parts[1],
-                    price: parts[2],
-                    name: 'Asset Name Here'
+                    address:address,
+                    price: price,
+                    name: name,
+                    transactions:[]
                 }
                 self.changeView('pay');
             } else {
+                self.showLoader('Retrieving Asset Data...')
+
                 //it is a buy
                 web3Helper.getPurchaseData().then(function(response) {
                     //this is fake right now
                     self.scannedAsset = {
-                        address: "1321EF232",
-                        name: "Fioretti",
+                        address: address,
+                        name: name,
                         sharesAvailable: "1000",
                         shareValue: "$1.00",
-                        totalShareValue: "$1,000.00"
+                        totalShareValue: "$1,000.00",
+                        transactions:[]
                     }
                     self.changeView('purchase');
                 })
@@ -108,39 +110,15 @@ var app = {
         }
 
         self.purchaseAsset = function() {
-            console.log("now purchasing asset:");
-            var response = {
-                name: 'Fioretti',
-                sharesOwned: "1000",
-                shareValue: "$1.00",
-                totalShareValue: '$1,000.00',
-                transactions: [{
-                    date: "03-21-2015",
-                    amount: '- $1,000.00'
-                }]
-            }
-            self.ownedAssets.push(response);
+            self.scannedAsset.transactions.push({
+                date: self.formatFullDate(new Date()),
+                amount: self.purchaseAmount,
+                type: 'p'
+            })
+            self.ownedAssets.push(self.scannedAsset);
             alert("Successfully Purchased Asset!")
             self.changeView('homepage');
             return
-            web3Helper.sendransaction(self.scannedAddress, self.purchaseAmount).then(function(response) {
-                //now add the purchased asset to owned assets array
-                var response = {
-                    name: 'Fioretti',
-                    sharesOwned: "1000",
-                    shareValue: "$1.00",
-                    totalShareValue: '$1,000.00',
-                    transactions: [{
-                        date: "12-12-2012",
-                        amount: '+ $100.00'
-                    }, {
-                        date: "03-21-2015",
-                        amount: '- $1,000.00'
-                    }]
-                }
-                ctrl.ownedAssets.push(response);
-                self.changeView('homepage');
-            })
         }
 
         self.showLoader = function(message) {
@@ -202,6 +180,23 @@ var app = {
                 alert('You have successfully paid '+paymentAmount+' into asset'+ self.scannedAsset.name)
                 self.changeView('homepage')
             })
+        }
+
+        self.formatFullDate = function(date) {
+            var dd = date.getDate();
+            var mm = date.getMonth() + 1; //January is 0!
+            var yyyy = date.getFullYear();
+
+            if (dd < 10) {
+                dd = '0' + dd
+            }
+
+            if (mm < 10) {
+                mm = '0' + mm
+            }
+
+            date = mm + '/' + dd + '/' + yyyy;
+            return date;
         }
 
         self.openScanner = function() {
