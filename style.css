@@ -21,7 +21,6 @@
 }
 .logo-big {
   /* Rectangle 2: */
-
   background-image: url("../img/botBig.png");
   background-position: center center;
   background-repeat: no-repeat;
@@ -30,6 +29,11 @@
   height: 300px;
   width: 220px;
 }
+
+.logo-big.signup {
+  background-image: url("../img/signupBot.png");
+}
+
 .btn {
   height: 48px;
   line-height: 48px;
