@@ -22,8 +22,9 @@ var app = {
         self.accountBalance = null;
         self.currentAsset = null;
         self.ownedAssets = [];
-        self.scannedAddress = null;
         self.purchaseAmount = m.prop(0);
+        self.purchaseShares = 0;
+        self.scannedAddress = '';
 
         if (localStorage.account) {
             web3Helper = require('./web3Helper');
@@ -38,15 +39,14 @@ var app = {
 
         self.generateAccount = function() {
             self.showLoader('Generating your BotVest Account..')
-            var privKey = new bitcore.PrivateKey().toString();
-            var userKey = new Buffer(privKey, 'hex');
-            var wallet = Wallet.fromPrivateKey(userKey);
+            // var privKey = new bitcore.PrivateKey().toString();
+            // var userKey = new Buffer(privKey, 'hex');
+            // var wallet = Wallet.fromPrivateKey(userKey);
             account = {
-                address: wallet.getAddressString(),
-                privateKey: privKey
+                address: "0x89e3a0403f1b4e3e5ed422d2eb3f0f40e9dd6f12",
+                privateKey: "5603601f6d1fdd9eb59a569d8a300e1a1385af668dd8c7f79709001a873baa1b"
             }
             localStorage.account = JSON.stringify(account);
-            console.log("localStorage.account is:", localStorage.account);
             web3Helper = require('./web3Helper');
             //need to push account to chain and then fund from coinbase address
             setTimeout(function() {
@@ -61,17 +61,39 @@ var app = {
 
         self.displayScanner = function() {
             self.activeView = 'QRScan';
-            self.currentAsset = asset;
         }
 
         self.doScanAction = function() {
-            console.log("Now doing scan");
-            self.scannedAddress = '123929AE23F';
-            self.changeView('purchase')
-            return;
+            self.showLoader('Retrieving Asset Data...')
+            self.scannedAddress = "123EF323";
+            web3Helper.getPurchaseData().then(function(response){
+                self.scannedAsset = {
+                    address: "1321EF232",
+                    name: "Fioretti",
+                    sharesAvailable: "1000",
+                    shareValue: "$1.00",
+                    totalShareValue: "$1,000.00"
+                }
+                self.changeView('purchase');
+            })
         }
 
         self.purchaseAsset = function() {
+            console.log("now purchasing asset:");
+            var response = {
+                name: 'Fioretti',
+                sharesOwned: "1000",
+                shareValue: "$1.00",
+                totalShareValue: '$1,000.00'
+                transactions: [{
+                    date: "03-21-2015",
+                    amount: '- $1,000.00'
+                }]
+            }
+            ctrl.ownedAssets.push(response);
+            alert("Successfully Purchased Asset!")
+            self.changeView('homepage');
+            return
             web3Helper.sendransaction(self.scannedAddress, self.purchaseAmount).then(function(response) {
                 //now add the purchased asset to owned assets array
                 var response = {

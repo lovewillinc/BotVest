@@ -12,7 +12,7 @@ module.exports = function(ctrl) {
                                 },
                                 "arrow_back")
                         ]),
-                        m("span.title", "Title")
+                        m("span.title", "View Asset")
                     ]),
                     m("[layout='row'][layout-align='end center']", [
                         m("i.material-icons", {
@@ -57,7 +57,7 @@ module.exports = function(ctrl) {
                         m("div", [
                             m("span.asset-date", transaction.date),
                         ]),
-                        m("div", 'amount owned here')
+                        m("div", transaction.amount)
                     ])
                 })
             ])

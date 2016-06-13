@@ -5,7 +5,7 @@ module.exports = function(ctrl) {
                 m("[layout='row'][layout-align='space-between center']", [
                     m("[layout='row'][layout-align='start center']", [
                         m(".u-width-56", ""),
-                        m("span.title", "Title")
+                        m("span.title", "BotVest")
                     ]),
                     m("[layout='row'][layout-align='end center']", [
                         m("i.material-icons", {
@@ -42,7 +42,7 @@ module.exports = function(ctrl) {
                             }
                         }, [
                             m("div", asset.name),
-                            m("div", asset.amount)
+                            m("div", asset.totalShareValue)
                         ])
                     })
                 ])

@@ -11,7 +11,7 @@ module.exports = function(ctrl) {
                         }, [
                             m("i.material-icons.firstIcon", "arrow_back")
                         ]),
-                        m("span.title", "Title")
+                        m("span.title", "Purchase Asset")
                     ]),
                     m("[layout='row'][layout-align='end center']", [
                         m("i.material-icons",{
@@ -54,10 +54,10 @@ module.exports = function(ctrl) {
                     }),
                     m("span.inputBalanceLabel", "Current Balance: " + ctrl.accountBalance )
                 ]),
-                m(".asset-row.u-noBorder[layout='row'][layout-align='space-between center']", [
-                    m("div", "Shares to be purchased"),
-                    m("div", ctrl.purchaseShares)
-                ]),
+                // m(".asset-row.u-noBorder[layout='row'][layout-align='space-between center']", [
+                //     m("div", "Shares to be purchased"),
+                //     m("div", ctrl.purchaseShares)
+                // ]),
                 m(".purchase.u-padding-0_16[layout='row'][layout-align='space-between center']", [
                     m("a.btn.btn-primary[href='#']",{
                         onclick: ctrl.purchaseAsset
@@ -70,6 +70,5 @@ module.exports = function(ctrl) {
                 ])
             ])
         ])
-
     ]
 }
