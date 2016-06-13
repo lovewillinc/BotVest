@@ -23216,6 +23216,7 @@ var app = {
         }
 
         self.viewAsset = function(asset) {
+            console.log("setting currentAsset: ", asset)
             self.currentAsset = asset;
             self.changeView('viewAsset');
         }
@@ -23226,6 +23227,8 @@ var app = {
 
         self.doScanAction = function(result) {
             result = "b:0x73d61b6effc71243629aa3caedf496221f56a43f"
+            alert("got the result. here it is");
+            alert(result);
             var parts = result.split(':');
             var type = parts[0];
             var address = parts[1];
@@ -23307,6 +23310,20 @@ var app = {
         self.dollarFormat = function(amount) {
             if (!amount) amount = '0';
             amount = amount / 1e12;
+            amount = amount.toString();
+            amount = amount.replace(/\$/g, '');
+            amount = amount.replace(/,/g, '');
+
+            var dollars = amount.split('.')[0],
+                cents = (amount.split('.')[1] || '') + '00';
+            var dollars = dollars.split('').reverse().join('')
+                .replace(/(\d{3}(?!$))/g, '$1,')
+                .split('').reverse().join('');
+            return '$' + dollars + '.' + cents.slice(0, 2);
+        }
+
+        self.usdFormat = function(amount) {
+            if (!amount) amount = '0';
             amount = amount.toString();
             amount = amount.replace(/\$/g, '');
             amount = amount.replace(/,/g, '');
@@ -76883,22 +76900,26 @@ module.exports = function(ctrl) {
                     m("div", "No assets are currently owned."),
                 ]) : m('div', [
                     Object.keys(assetDictionary).map(function(i) {
-                        var asset = assetDictionary[i];
+                        var newAsset = assetDictionary[i];
                         console.log("ctrl.ownedAssets", ctrl.ownedAssets);
-                        console.log("asset.address", i);
+                        console.log("newAsset.address", i);
                         
                         if(ctrl.ownedAssets[i]) 
-                            asset.sharesOwned = ctrl.ownedAssets[i].sharesOwned;
+                            newAsset.sharesOwned = ctrl.ownedAssets[i].sharesOwned;
                         else
-                            asset.sharesOwned = 0;
+                            newAsset.sharesOwned = 0;
                         
                         return m(".asset-row[layout='row'][layout-align='space-between center']", {
                             onclick: function() {
+                                var assetObj = asset.at(i);
+                                asset.shareValue = assetObj.currentPrice.call().toNumber();
+                                asset.sharesOwned = assetObj.balanceOf(account.address).toNumber();
+                                console.log("asset.shareValue", asset.shareValue)
                                 ctrl.viewAsset(asset);
                             }
                         }, [
-                            m("div", asset.name),
-                            m("div", asset.sharesOwned)
+                            m("div", newAsset.name),
+                            m("div", newAsset.sharesOwned)
                         ])
                     })
                 ])
@@ -77088,7 +77109,7 @@ module.exports = function(ctrl) {
                 ]),
                 m(".asset-row[layout='row'][layout-align='space-between center']", [
                     m("strong", 'Shares Value'),
-                    m("div", ctrl.convertYoSzabo(ctrl.currentAsset.shareValue))
+                    m("div", ctrl.usdFormat(ctrl.convertYoSzabo(ctrl.currentAsset.shareValue)))
                 ]),
                 // m(".asset-row.u-marginBottom-24[layout='row'][layout-align='space-between center']", [
                 //     m("strong", 'Total Shares Value'),

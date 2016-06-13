@@ -36,22 +36,26 @@ module.exports = function(ctrl) {
                     m("div", "No assets are currently owned."),
                 ]) : m('div', [
                     Object.keys(assetDictionary).map(function(i) {
-                        var asset = assetDictionary[i];
+                        var newAsset = assetDictionary[i];
                         console.log("ctrl.ownedAssets", ctrl.ownedAssets);
-                        console.log("asset.address", i);
+                        console.log("newAsset.address", i);
                         
                         if(ctrl.ownedAssets[i]) 
-                            asset.sharesOwned = ctrl.ownedAssets[i].sharesOwned;
+                            newAsset.sharesOwned = ctrl.ownedAssets[i].sharesOwned;
                         else
-                            asset.sharesOwned = 0;
+                            newAsset.sharesOwned = 0;
                         
                         return m(".asset-row[layout='row'][layout-align='space-between center']", {
                             onclick: function() {
+                                var assetObj = asset.at(i);
+                                asset.shareValue = assetObj.currentPrice.call().toNumber();
+                                asset.sharesOwned = assetObj.balanceOf(account.address).toNumber();
+                                console.log("asset.shareValue", asset.shareValue)
                                 ctrl.viewAsset(asset);
                             }
                         }, [
-                            m("div", asset.name),
-                            m("div", asset.sharesOwned)
+                            m("div", newAsset.name),
+                            m("div", newAsset.sharesOwned)
                         ])
                     })
                 ])
