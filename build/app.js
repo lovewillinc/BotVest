@@ -18,11 +18,19 @@ views = {
 
 var app = {
     controller: function() {
-        console.log('bitcore is:', bitcore);
         var self = this;
-        console.log('account is:', account);
         self.activeView = (account) ? 'homepage' : 'welcome';
         self.loaderMessage = '';
+        self.accountBalance = null;
+
+        self.updateBalance = function() {
+        	web3Helper.getAccountBalance().then(function(balance){
+        		m.startComputation();
+        		self.accountBalance = balance
+        		m.endComputation();
+        	})
+        }
+
 
         self.generateAccount = function() {
             self.showLoader('Generating your BotVest Account..')
@@ -56,8 +64,15 @@ module.exports = function(ctrl) {
 
 },{}],3:[function(require,module,exports){
 module.exports = function(ctrl) {
+	console.log("inside view web3helper is:", web3Helper);
     return [
         m("h3", "Homepage"),
+        m("Balance",{
+        	config: function() {
+        		ctrl.updateBalance();
+        		console.log("getting the Balance:");
+        	}
+        }, ctrl.accountBalance || "Getting Balance...")
     ]
 }
 
@@ -97,28 +112,61 @@ module.exports = function(ctrl) {
 },{}],9:[function(require,module,exports){
 (function (Buffer){
 module.exports = function() {
-	web3 = new Web3();
-	account = localStorage.account ? JSON.parse(localStorage.account) : null;
-	// contracts = localStorage.contracts ? JSON.parse(localStorage.contracts) : {};
+    web3 = new Web3();
+    account = localStorage.account ? JSON.parse(localStorage.account) : null;
+    // contracts = localStorage.contracts ? JSON.parse(localStorage.contracts) : {};
 
-	return web3Helper = {
-	    /**
-	     * Creates a new Ethereum wallet
-	     * @return {void} this function does not return anything
-	     */
-	    createAccount: function() {
-	        var privKey = new bitcore.PrivateKey().toString();
-	        var userKey = new Buffer(privKey, 'hex')
-	        var wallet = Wallet.fromPrivateKey(userKey);
-	        account = {
-	            address: wallet.getAddressString(),
-	            privateKey: privKey
-	        }
-	        localStorage.account = JSON.stringify(account);
-	        console.log("localStorage.account is:", localStorage.account);
-	    }
-	}
-}();
+    return web3Helper = {
+        /**
+         * Creates a new Ethereum wallet
+         * @return {void} this function does not return anything
+         */
+        createAccount: function() {
+            var privKey = new bitcore.PrivateKey().toString();
+            var userKey = new Buffer(privKey, 'hex')
+            var wallet = Wallet.fromPrivateKey(userKey);
+            account = {
+                address: wallet.getAddressString(),
+                privateKey: privKey
+            }
+            localStorage.account = JSON.stringify(account);
+            console.log("localStorage.account is:", localStorage.account);
+        },
+        getAccountBalance: function() {
+        	var x = web3.fromWei(web3.eth.getBalance(account.address), "wei").toString();
+        	console.log("here is x:", x);
+            var deferred = m.deferred();
+            setTimeout(function(){
+            	m.startComputation();
+            	deferred.resolve(100);
+            	m.endComputation();
+            }, 2000)
+            //deferred.resolve(web3.fromWei(web3.eth.getBalance(account.address), "wei").toString())
+            return deferred.promise
+        },
+        sendransaction: function(toAddress, amount) {
+            web3.eth.sendTransaction({
+                from: account.address,
+                fromObj: account,
+                to: toAddress,
+                value: amount,
+                gas: 7e4,
+                gasPrice: 10
+            }, function(err, result) {
+                if (err != null) {
+                    console.log(err);
+                    console.log("ERROR: Transaction didn't go through. See console.");
+                } else {
+                    console.log("Transaction Successful!");
+                    console.log(err, result);
+                }
+            })
+        },
+        getPurchaseData: function(address) {
+
+        }
+    }
+}()
 
 }).call(this,require("buffer").Buffer)
 },{"buffer":262}],10:[function(require,module,exports){

@@ -4,6 +4,7 @@ Transaction = require('ethereumjs-tx');
 bitcore = require('bitcore-lib');
 Web3 = require('web3');
 web3Helper = require('./web3Helper')
+HookedWeb3Provider = require("hooked-web3-provider");
 
 views = {
     welcome: require('./views/welcome.js'),
@@ -20,14 +21,26 @@ var app = {
         var self = this;
         self.activeView = (account) ? 'homepage' : 'welcome';
         self.loaderMessage = '';
+        self.accountBalance = null;
+        self.currentAsset = null;
+        self.ownedAssets = null;
+        self.scannedAddress = null;
+
+        self.updateBalance = function() {
+            web3Helper.getAccountBalance().then(function(balance) {
+                m.startComputation();
+                self.accountBalance = balance
+                m.endComputation();
+            })
+        }
+
 
         self.generateAccount = function() {
             self.showLoader('Generating your BotVest Account..')
-            web3Helper.createAccount()
-            setTimeout(function() {
+            web3Helper.createAccount().then(function(response) {
                 self.activeView = 'homepage';
                 m.redraw();
-            }, 3000)
+            })
         }
 
         self.showLoader = function(message) {
