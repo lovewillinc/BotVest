@@ -27,7 +27,6 @@ views = {
 
 var app = {
     controller: function() {
-
         var self = this;
         self.activeView = (localStorage.account) ? 'homepage' : 'welcome';
         self.loaderMessage = '';
@@ -39,6 +38,7 @@ var app = {
         self.scannedAddress = '';
 
         self.updateBalance = function() {
+            console.log("going to get the balance:");
             web3Helper.getAccountBalance().then(function(balance) {
                 self.accountBalance(balance);
             })
@@ -16525,7 +16525,7 @@ module.exports = function() {
 
     HookedWeb3Provider = require("hooked-web3-provider");
     provider = new HookedWeb3Provider({
-        host: "http://0.0.0.0:10918",
+        host: "http://10.50.18.165:10918",
         transaction_signer: {
             hasAddress: function(address, callback) {
                 callback(null, true);

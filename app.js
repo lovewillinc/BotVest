@@ -25,7 +25,6 @@ views = {
 
 var app = {
     controller: function() {
-
         var self = this;
         self.activeView = (localStorage.account) ? 'homepage' : 'welcome';
         self.loaderMessage = '';
@@ -37,6 +36,7 @@ var app = {
         self.scannedAddress = '';
 
         self.updateBalance = function() {
+            console.log("going to get the balance:");
             web3Helper.getAccountBalance().then(function(balance) {
                 self.accountBalance(balance);
             })

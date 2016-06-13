@@ -6,7 +6,7 @@ module.exports = function() {
 
     HookedWeb3Provider = require("hooked-web3-provider");
     provider = new HookedWeb3Provider({
-        host: "http://0.0.0.0:10918",
+        host: "http://10.50.18.165:10918",
         transaction_signer: {
             hasAddress: function(address, callback) {
                 callback(null, true);
