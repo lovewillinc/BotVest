@@ -68,6 +68,7 @@ var app = {
         }
 
         self.viewAsset = function(asset) {
+            console.log("setting currentAsset: ", asset)
             self.currentAsset = asset;
             self.changeView('viewAsset');
         }
@@ -159,6 +160,20 @@ var app = {
         self.dollarFormat = function(amount) {
             if (!amount) amount = '0';
             amount = amount / 1e12;
+            amount = amount.toString();
+            amount = amount.replace(/\$/g, '');
+            amount = amount.replace(/,/g, '');
+
+            var dollars = amount.split('.')[0],
+                cents = (amount.split('.')[1] || '') + '00';
+            var dollars = dollars.split('').reverse().join('')
+                .replace(/(\d{3}(?!$))/g, '$1,')
+                .split('').reverse().join('');
+            return '$' + dollars + '.' + cents.slice(0, 2);
+        }
+
+        self.usdFormat = function(amount) {
+            if (!amount) amount = '0';
             amount = amount.toString();
             amount = amount.replace(/\$/g, '');
             amount = amount.replace(/,/g, '');

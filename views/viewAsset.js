@@ -43,7 +43,7 @@ module.exports = function(ctrl) {
                 ]),
                 m(".asset-row[layout='row'][layout-align='space-between center']", [
                     m("strong", 'Shares Value'),
-                    m("div", ctrl.convertYoSzabo(ctrl.currentAsset.shareValue))
+                    m("div", ctrl.usdFormat(ctrl.convertYoSzabo(ctrl.currentAsset.shareValue)))
                 ]),
                 // m(".asset-row.u-marginBottom-24[layout='row'][layout-align='space-between center']", [
                 //     m("strong", 'Total Shares Value'),
