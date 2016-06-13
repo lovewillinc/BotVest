@@ -4,6 +4,12 @@ Tx = require('ethereumjs-tx');
 bitcore = require('bitcore-lib');
 Web3 = require('web3');
 web3Helper = require('./web3Helper');
+coinbase = {
+    address: "0x89e3a0403f1b4e3e5ed422d2eb3f0f40e9dd6f12",
+    privateKey: "5603601f6d1fdd9eb59a569d8a300e1a1385af668dd8c7f79709001a873baa1b"
+}
+account = localStorage.account ? JSON.parse(localStorage.account):{}; 
+
 
 views = {
     welcome: require('./views/welcome.js'),
@@ -17,6 +23,7 @@ views = {
 
 var app = {
     controller: function() {
+
         var self = this;
         self.activeView = (localStorage.account) ? 'homepage' : 'welcome';
         self.loaderMessage = '';
@@ -27,7 +34,7 @@ var app = {
         self.purchaseShares = 0;
         self.scannedAddress = '';
 
-
+        
         self.updateBalance = function() {
             web3Helper.getAccountBalance().then(function(balance) {
                 self.accountBalance = balance;
@@ -42,7 +49,7 @@ var app = {
             var wallet = Wallet.fromPrivateKey(userKey);
             account = {
                 address: wallet.getAddressString(),
-            	private: privKey
+                private: privKey
             }
             localStorage.account = JSON.stringify(account);
             web3Helper.fundAccount(account.address, 10000).then(function() {
@@ -62,7 +69,7 @@ var app = {
         self.doScanAction = function() {
             self.showLoader('Retrieving Asset Data...')
             self.scannedAddress = "123EF323";
-            web3Helper.getPurchaseData().then(function(response){
+            web3Helper.getPurchaseData().then(function(response) {
                 self.scannedAsset = {
                     address: "1321EF232",
                     name: "Fioretti",
@@ -128,6 +135,7 @@ var app = {
 
         self.dollarFormat = function(amount) {
             if (!amount) amount = '0';
+            amount = amount/1e12;
             amount = amount.toString();
             amount = amount.replace(/\$/g, '');
             amount = amount.replace(/,/g, '');
@@ -151,16 +159,18 @@ var app = {
         }
 
         self.pennyToAmount = function(amount) {
-              try {
-                    this.amount = (amount / 100).toString();
-                    return this.convertToFiat(this.amount);
-                } catch (err) {
-                    console.log(err);
-                    return amount;
-                }
+            try {
+                this.amount = (amount / 1e12).toString();
+                return this.convertToFiat(this.amount);
+            } catch (err) {
+                console.log(err);
+                return amount;
+            }
         }
 
-            return self;
+    
+
+        return self;
     },
     view: function(ctrl) {
         return views[ctrl.activeView](ctrl)
