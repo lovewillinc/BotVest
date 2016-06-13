@@ -78,6 +78,8 @@ var app = {
 
         self.doScanAction = function(result) {
             result = "b:0x73d61b6effc71243629aa3caedf496221f56a43f"
+            alert("got the result. here it is");
+            alert(result);
             var parts = result.split(':');
             var type = parts[0];
             var address = parts[1];
