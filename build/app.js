@@ -23154,11 +23154,12 @@ Tx = require('ethereumjs-tx');
 bitcore = require('bitcore-lib');
 Web3 = require('web3');
 web3Helper = require('./web3Helper');
-localStorage.account = coinbase = {
+coinbase = {
     address: "0x89e3a0403f1b4e3e5ed422d2eb3f0f40e9dd6f12",
     private: "5603601f6d1fdd9eb59a569d8a300e1a1385af668dd8c7f79709001a873baa1b"
 }
-account = localStorage.account ? JSON.parse(localStorage.account) : {};
+//account = localStorage.account ? JSON.parse(localStorage.account) : {};
+account = coinbase;
 asset = require("./asset.abi")();
 
 views = {
