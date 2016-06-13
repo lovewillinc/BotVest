@@ -1,4 +1,5 @@
 module.exports = function(ctrl) {
+    ctrl.updateBalance();
     return [
         m("[layout='column'][layout-align='start center']", [
             m("nav", [
@@ -31,12 +32,9 @@ module.exports = function(ctrl) {
             m(".content", [
                 m(".balance-row[layout='column'][layout-align='center start']", [
                     m(".balance-title", {
-                        config: function(elem, isInit, ctx) {
-                            if (!isInit)
-                                ctrl.updateBalance();
-                        }
-                    }, (!ctrl.accountBalance) ? 'Retrieving...' : self.dollarFormat(ctrl.accountBalance)),
-                    m("span", "Current account balance")
+                        config: function(elem, isInit, ctx) {}
+                    }, (!ctrl.accountBalance()) ? 'Retrieving...' : ctrl.dollarFormat(ctrl.accountBalance())),
+                    m("span", "Account Balance")
                 ]),
                 m(".section-title", 'Asset Details'),
                 m(".asset-row[layout='row'][layout-align='space-between center']", [
@@ -45,21 +43,21 @@ module.exports = function(ctrl) {
                 ]),
                 m(".asset-row[layout='row'][layout-align='space-between center']", [
                     m("strong", 'Shares Value'),
-                    m("div", ctrl.currentAsset.shareValue)
+                    m("div", ctrl.convertYoSzabo(ctrl.currentAsset.shareValue))
                 ]),
-                m(".asset-row.u-marginBottom-24[layout='row'][layout-align='space-between center']", [
-                    m("strong", 'Total Shares Value'),
-                    m("div", ctrl.currentAsset.totalShareValue)
-                ]),
-                m(".section-title", "Transactions"),
-                ctrl.currentAsset.transactions.map(function(transaction) {
-                    return m(".asset-row[layout='row'][layout-align='space-between center']", [
-                        m("div", [
-                            m("span.asset-date", transaction.date),
-                        ]),
-                        m("div", transaction.amount)
-                    ])
-                })
+                // m(".asset-row.u-marginBottom-24[layout='row'][layout-align='space-between center']", [
+                //     m("strong", 'Total Shares Value'),
+                //     m("div", ctrl.currentAsset.totalShareValue)
+                // ]),
+                // m(".section-title", "Transactions"),
+                // ctrl.currentAsset.transactions.map(function(transaction) {
+                //     return m(".asset-row[layout='row'][layout-align='space-between center']", [
+                //         m("div", [
+                //             m("span.asset-date", transaction.date),
+                //         ]),
+                //         m("div", transaction.amount)
+                //     ])
+                // })
             ])
         ])
     ]

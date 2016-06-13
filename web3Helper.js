@@ -6,7 +6,7 @@ module.exports = function() {
 
     HookedWeb3Provider = require("hooked-web3-provider");
     provider = new HookedWeb3Provider({
-        host: "http://10.50.18.165:10918",
+        host: "http://0.0.0.0:10918",
         transaction_signer: {
             hasAddress: function(address, callback) {
                 callback(null, true);
@@ -43,7 +43,7 @@ module.exports = function() {
 
                 var tx = new Tx(ethjsTxParams);
                 console.log(ethjsTxParams);
-                tx.sign(new Buffer(txParams.fromObj.privateKey || account.privateKey, 'hex'));
+                tx.sign(new Buffer(txParams.fromObj && txParams.fromObj.privateKey || account.privateKey, 'hex'));
                 var serializedTx = '0x' + tx.serialize().toString('hex');
 
                 callback(null, serializedTx);
@@ -106,11 +106,23 @@ module.exports = function() {
         },
         getPurchaseData: function(address) {
             var deferred = m.deferred();
-            deferred.resolve(true);
+            var address = "0x3524816c8501cfc1f9bc7c845905a9a5682ae3c1";
+            var purchaseAsset = asset.at(address);
+            var purchaseData = {
+                shareValue: purchaseAsset.currentPrice.call().toNumber(),
+                sharesAvailable: purchaseAsset.availableShares.call().toNumber()
+            }
+            deferred.resolve(purchaseData);
             return deferred.promise;
         },
-        purchaseAsset: function() {
-
+        purchaseAsset: function(address, value, callback) {
+            var purchaseAsset = asset.at(address);
+            purchaseAsset.buyShares({value: value}, function(response){
+                var sharesOwned = purchaseAsset.balanceOf(account.address)
+                console.log("sharesOwned", sharesOwned)
+                callback(sharesOwned)
+                console.log("response from purchaseAsset!!!:", arguments);
+            })
         }
     }
 }()

@@ -23156,9 +23156,8 @@ coinbase = {
     address: "0x89e3a0403f1b4e3e5ed422d2eb3f0f40e9dd6f12",
     privateKey: "5603601f6d1fdd9eb59a569d8a300e1a1385af668dd8c7f79709001a873baa1b"
 }
-account = localStorage.account ? JSON.parse(localStorage.account):{}; 
-
-asset  = require("./asset.abi")();
+account = localStorage.account ? JSON.parse(localStorage.account) : {};
+asset = require("./asset.abi")();
 
 views = {
     welcome: require('./views/welcome.js'),
@@ -23202,12 +23201,13 @@ var app = {
                 private: privKey
             }
             localStorage.account = JSON.stringify(account);
+            localStorage.ownedAssets = JSON.stringify([])
             web3Helper.fundAccount(account.address).then(function() {
                 self.accountBalance(100000)
                 self.changeView('homepage');
-                setTimeout(function(){
+                setTimeout(function() {
                     m.redraw();
-                },10)
+                }, 10)
             })
         }
 
@@ -23221,20 +23221,20 @@ var app = {
         }
 
         self.doScanAction = function(result) {
+            result = "b:0x3524816c8501cfc1f9bc7c845905a9a5682ae3c1"
             var parts = result.split(':');
             var type = parts[0];
             var address = parts[1];
-            var price = parts[2];
-            var name = parts[3]
             self.scannedAddress = address;
 
-            if(type == 'p'){
+            if (type == 'p') {
+                var price = parts[2];
                 //it is a pay into
                 self.scannedAsset = {
-                    address:address,
+                    name: "Placeholder",
+                    address: address,
                     price: price,
-                    name: name,
-                    transactions:[]
+                    transactions: []
                 }
                 self.changeView('pay');
             } else {
@@ -23242,14 +23242,14 @@ var app = {
 
                 //it is a buy
                 web3Helper.getPurchaseData().then(function(response) {
+                    console.log("response from get getPurchaseDat:", response);
                     //this is fake right now
                     self.scannedAsset = {
+                        name: "Placeholder",
                         address: address,
-                        name: name,
-                        sharesAvailable: "1000",
-                        shareValue: "$1.00",
-                        totalShareValue: "$1,000.00",
-                        transactions:[]
+                        sharesAvailable: response.sharesAvailable,
+                        shareValue: response.shareValue,
+                        transactions: []
                     }
                     self.changeView('purchase');
                 })
@@ -23257,15 +23257,27 @@ var app = {
         }
 
         self.purchaseAsset = function() {
-            self.scannedAsset.transactions.push({
-                date: self.formatFullDate(new Date()),
-                amount: self.purchaseAmount,
-                type: 'p'
-            })
-            self.ownedAssets.push(self.scannedAsset);
-            alert("Successfully Purchased Asset!")
-            self.changeView('homepage');
-            return
+            console.log(self.purchaseAmount())
+            var paymentAmount = self.amountToPenny(self.purchaseAmount());
+            console.log("paymentAmount is:", paymentAmount);
+            paymentAmount = paymentAmount * (1e12)
+            console.log("it is now:", paymentAmount);
+            web3Helper.purchaseAsset(self.scannedAsset.address, paymentAmount, function(sharesOwned) {
+                self.scannedAsset.sharesOwned = sharesOwned;
+                localStorage.ownedAssets = JSON.parse(localStorage.ownedAssets).push(self.scannedAsset)
+                
+                self.ownedAssets.push(self.scannedAsset);
+                alert("Successfully Purchased Asset!")
+                self.changeView('homepage');
+                m.redraw();
+            });
+
+            // self.scannedAsset.transactions.push({
+            //     date: self.formatFullDate(new Date()),
+            //     amount: self.purchaseAmount,
+            //     type: 'p'
+            // })
+
         }
 
         self.showLoader = function(message) {
@@ -23287,7 +23299,7 @@ var app = {
 
         self.dollarFormat = function(amount) {
             if (!amount) amount = '0';
-            amount = amount/1e12;
+            amount = amount / 1e12;
             amount = amount.toString();
             amount = amount.replace(/\$/g, '');
             amount = amount.replace(/,/g, '');
@@ -23302,7 +23314,7 @@ var app = {
 
         self.amountToPenny = function(amount) {
             try {
-                this.amount = this.floatToAmount(parseFloat(amount).toFixed(2));
+                this.amount = self.floatToAmount(parseFloat(amount).toFixed(2));
                 return parseFloat(this.amount.replace(".", ""));
             } catch (err) {
                 console.log(err);
@@ -23313,7 +23325,7 @@ var app = {
         self.pennyToAmount = function(amount) {
             try {
                 this.amount = (amount / 1e12).toString();
-                return this.convertToFiat(this.amount);
+                return self.convertToFiat(this.amount);
             } catch (err) {
                 console.log(err);
                 return amount;
@@ -23324,8 +23336,8 @@ var app = {
             //send money to asset contract
             var paymentAmount = self.scannedAddress.price;
             var assestAddress = "THE ASSEST ADDRESS HERE"
-            web3Helper.sendTransaction(assestAddress, paymentAmount).then(function(response){
-                alert('You have successfully paid '+paymentAmount+' into asset'+ self.scannedAsset.name)
+            web3Helper.sendTransaction(assestAddress, paymentAmount).then(function(response) {
+                alert('You have successfully paid ' + paymentAmount + ' into asset' + self.scannedAsset.name)
                 self.changeView('homepage')
             })
         }
@@ -23347,6 +23359,17 @@ var app = {
             return date;
         }
 
+        self.convertToFiat = function(amount) {
+                if (!amount) {
+                    return '$0.00';
+                }
+                return self.dollarFormat(amount);
+            },
+
+            self.convertYoSzabo = function(amount) {
+                return amount / 100;
+            }
+
         self.openScanner = function() {
             self.changeView('purchase');
             return;
@@ -23366,6 +23389,11 @@ var app = {
                 alert("error");
                 alert(e);
             }
+        }
+
+        self.floatToAmount = function(amount) {
+            if (!amount) amount = 0;
+            return parseFloat(amount).toFixed(2);
         }
 
         return self;
@@ -76767,8 +76795,8 @@ arguments[4][531][0].apply(exports,arguments)
 module.exports = function(ctrl) {
     return m('div', {
         config: function(element, isInit, ctx) {
-            if(!isInit)
-                ctrl.openScanner();
+            // if(!isInit)
+                //ctrl.openScanner();
         }
     }, [
         m("h3", "QR Scanner here"),
@@ -76812,7 +76840,7 @@ module.exports = function(ctrl) {
                 m(".balance-row[layout='column'][layout-align='center start']", [
                     m(".balance-title", {
                         config: function(elem, isInit, ctx) {}
-                    }, (!ctrl.accountBalance()) ? 'Retrieving...' : ctrl.accountBalance()),
+                    }, (!ctrl.accountBalance()) ? 'Retrieving...' : ctrl.dollarFormat(ctrl.accountBalance())),
                     m("span", "Account Balance")
                 ]),
                 m(".section-title", "Assets"),
@@ -76826,7 +76854,7 @@ module.exports = function(ctrl) {
                             }
                         }, [
                             m("div", asset.name),
-                            m("div", asset.totalShareValue)
+                            m("div", ctrl.convertYoSzabo(asset.totalShareValue))
                         ])
                     })
                 ])
@@ -76972,6 +77000,7 @@ module.exports = function(ctrl) {
 }
 },{}],624:[function(require,module,exports){
 module.exports = function(ctrl) {
+    ctrl.updateBalance();
     return [
         m("[layout='column'][layout-align='start center']", [
             m("nav", [
@@ -77004,12 +77033,9 @@ module.exports = function(ctrl) {
             m(".content", [
                 m(".balance-row[layout='column'][layout-align='center start']", [
                     m(".balance-title", {
-                        config: function(elem, isInit, ctx) {
-                            if (!isInit)
-                                ctrl.updateBalance();
-                        }
-                    }, (!ctrl.accountBalance) ? 'Retrieving...' : self.dollarFormat(ctrl.accountBalance)),
-                    m("span", "Current account balance")
+                        config: function(elem, isInit, ctx) {}
+                    }, (!ctrl.accountBalance()) ? 'Retrieving...' : ctrl.dollarFormat(ctrl.accountBalance())),
+                    m("span", "Account Balance")
                 ]),
                 m(".section-title", 'Asset Details'),
                 m(".asset-row[layout='row'][layout-align='space-between center']", [
@@ -77018,21 +77044,21 @@ module.exports = function(ctrl) {
                 ]),
                 m(".asset-row[layout='row'][layout-align='space-between center']", [
                     m("strong", 'Shares Value'),
-                    m("div", ctrl.currentAsset.shareValue)
+                    m("div", ctrl.convertYoSzabo(ctrl.currentAsset.shareValue))
                 ]),
-                m(".asset-row.u-marginBottom-24[layout='row'][layout-align='space-between center']", [
-                    m("strong", 'Total Shares Value'),
-                    m("div", ctrl.currentAsset.totalShareValue)
-                ]),
-                m(".section-title", "Transactions"),
-                ctrl.currentAsset.transactions.map(function(transaction) {
-                    return m(".asset-row[layout='row'][layout-align='space-between center']", [
-                        m("div", [
-                            m("span.asset-date", transaction.date),
-                        ]),
-                        m("div", transaction.amount)
-                    ])
-                })
+                // m(".asset-row.u-marginBottom-24[layout='row'][layout-align='space-between center']", [
+                //     m("strong", 'Total Shares Value'),
+                //     m("div", ctrl.currentAsset.totalShareValue)
+                // ]),
+                // m(".section-title", "Transactions"),
+                // ctrl.currentAsset.transactions.map(function(transaction) {
+                //     return m(".asset-row[layout='row'][layout-align='space-between center']", [
+                //         m("div", [
+                //             m("span.asset-date", transaction.date),
+                //         ]),
+                //         m("div", transaction.amount)
+                //     ])
+                // })
             ])
         ])
     ]
@@ -77063,7 +77089,7 @@ module.exports = function() {
 
     HookedWeb3Provider = require("hooked-web3-provider");
     provider = new HookedWeb3Provider({
-        host: "http://10.50.18.165:10918",
+        host: "http://0.0.0.0:10918",
         transaction_signer: {
             hasAddress: function(address, callback) {
                 callback(null, true);
@@ -77100,7 +77126,7 @@ module.exports = function() {
 
                 var tx = new Tx(ethjsTxParams);
                 console.log(ethjsTxParams);
-                tx.sign(new Buffer(txParams.fromObj.privateKey || account.privateKey, 'hex'));
+                tx.sign(new Buffer(txParams.fromObj && txParams.fromObj.privateKey || account.privateKey, 'hex'));
                 var serializedTx = '0x' + tx.serialize().toString('hex');
 
                 callback(null, serializedTx);
@@ -77163,11 +77189,23 @@ module.exports = function() {
         },
         getPurchaseData: function(address) {
             var deferred = m.deferred();
-            deferred.resolve(true);
+            var address = "0x3524816c8501cfc1f9bc7c845905a9a5682ae3c1";
+            var purchaseAsset = asset.at(address);
+            var purchaseData = {
+                shareValue: purchaseAsset.currentPrice.call().toNumber(),
+                sharesAvailable: purchaseAsset.availableShares.call().toNumber()
+            }
+            deferred.resolve(purchaseData);
             return deferred.promise;
         },
-        purchaseAsset: function() {
-
+        purchaseAsset: function(address, value, callback) {
+            var purchaseAsset = asset.at(address);
+            purchaseAsset.buyShares({value: value}, function(response){
+                var sharesOwned = purchaseAsset.balanceOf(account.address)
+                console.log("sharesOwned", sharesOwned)
+                callback(sharesOwned)
+                console.log("response from purchaseAsset!!!:", arguments);
+            })
         }
     }
 }()

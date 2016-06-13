@@ -19,6 +19,7 @@
 .logo-small {
   width: 45px;
 }
+
 .logo-big {
   /* Rectangle 2: */
 
@@ -81,6 +82,9 @@ nav i.material-icons {
 nav .firstIcon {
   margin-left: 0px !important;
 }
+nav .firstIcon {
+  margin-left: 0px !important;
+}
 .title {
   /* Title: */
 
@@ -137,7 +141,6 @@ nav .firstIcon {
 }
 .inputPurchaseTitle {
   /* Enter purchase amoun: */
-
   font-family: Roboto-Medium;
   font-size: 24px;
   color: #4A4A4A;
@@ -152,7 +155,6 @@ nav .firstIcon {
 }
 .inputBalanceLabel {
   /* Current balance:  $5: */
-
   font-weight: 300;
   font-size: 12px;
   color: #4A4A4A;
@@ -167,3 +169,4 @@ nav .firstIcon {
   padding: 32px 16px 24px;
   margin-bottom: 24px;
 }
+
