@@ -138,13 +138,7 @@ var app = {
             },
 
             self.test = function() {
-                alert("about to try it");
                 try {
-
-                    Object.keys(cordova).forEach(function(key) {
-                        alert(key);
-                    })
-
                     cordova.plugins.barcodeScanner.scan(
                         function(result) {
                             if (!result.cancelled) {
