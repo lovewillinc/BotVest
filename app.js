@@ -222,8 +222,6 @@ var app = {
             }
 
         self.openScanner = function() {
-            self.changeView('purchase');
-            return;
             try {
                 cordova.plugins.barcodeScanner.scan(
                     function(result) {
