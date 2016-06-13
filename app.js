@@ -3,6 +3,7 @@ m = require('mithril');
 Tx = require('ethereumjs-tx');
 bitcore = require('bitcore-lib');
 Web3 = require('web3');
+web3Helper = require('./web3Helper');
 
 views = {
     welcome: require('./views/welcome.js'),
@@ -26,9 +27,9 @@ var app = {
         self.purchaseShares = 0;
         self.scannedAddress = '';
 
-        if (localStorage.account) {
-            web3Helper = require('./web3Helper');
-        }
+    
+         
+     
 
         self.updateBalance = function() {
             web3Helper.getAccountBalance().then(function(balance) {
