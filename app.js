@@ -27,9 +27,6 @@ var app = {
         self.purchaseShares = 0;
         self.scannedAddress = '';
 
-    
-         
-     
 
         self.updateBalance = function() {
             web3Helper.getAccountBalance().then(function(balance) {
@@ -48,11 +45,9 @@ var app = {
             	private: privKey
             }
             localStorage.account = JSON.stringify(account);
-            web3Helper = require('./web3Helper');
-            //need to push account to chain and then fund from coinbase address
-            setTimeout(function() {
+            web3Helper.fundAccount(account.address, 10000).then(function() {
                 self.changeView('homepage')
-            }, 2000)
+            })
         }
 
         self.viewAsset = function(asset) {
@@ -91,7 +86,7 @@ var app = {
                     amount: '- $1,000.00'
                 }]
             }
-            ctrl.ownedAssets.push(response);
+            self.ownedAssets.push(response);
             alert("Successfully Purchased Asset!")
             self.changeView('homepage');
             return
