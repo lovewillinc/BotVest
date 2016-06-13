@@ -23,9 +23,15 @@ var app = {
         self.accountBalance = null;
         self.currentAsset = null;
         self.ownedAssets = [];
+
         self.purchaseAmount = m.prop(0);
         self.purchaseShares = 0;
-        self.scannedAddress = '';
+        self.scannedAddress = null;
+
+        if (localStorage.account) {
+            web3Helper = require('./web3Helper');
+        }
+
 
         self.updateBalance = function() {
             web3Helper.getAccountBalance().then(function(balance) {
@@ -41,9 +47,10 @@ var app = {
             var wallet = Wallet.fromPrivateKey(userKey);
             account = {
                 address: wallet.getAddressString(),
-            	private: privKey
+                private: privKey
             }
             localStorage.account = JSON.stringify(account);
+
             web3Helper.fundAccount(account.address, 10000).then(function() {
                 self.changeView('homepage')
             })
@@ -61,7 +68,7 @@ var app = {
         self.doScanAction = function() {
             self.showLoader('Retrieving Asset Data...')
             self.scannedAddress = "123EF323";
-            web3Helper.getPurchaseData().then(function(response){
+            web3Helper.getPurchaseData().then(function(response) {
                 self.scannedAsset = {
                     address: "1321EF232",
                     name: "Fioretti",
@@ -150,16 +157,36 @@ var app = {
         }
 
         self.pennyToAmount = function(amount) {
-              try {
-                    this.amount = (amount / 100).toString();
-                    return this.convertToFiat(this.amount);
-                } catch (err) {
-                    console.log(err);
-                    return amount;
-                }
+            try {
+                this.amount = (amount / 100).toString();
+                return this.convertToFiat(this.amount);
+            } catch (err) {
+                console.log(err);
+                return amount;
+            }
         }
 
-            return self;
+        self.openScanner = function() {
+            try {
+                cordova.plugins.barcodeScanner.scan(
+                    function(result) {
+                        if (!result.cancelled) {
+                            if (result.format == "QR_CODE") {
+                                //stub here
+                                self.doScanAction();
+                            }
+                        }
+                    },
+                    function(error) {
+                        alert("Scanning failed: " + error);
+                    })
+            } catch (e) {
+                alert("error");
+                alert(e);
+            }
+        }
+
+        return self;
     },
     view: function(ctrl) {
         return views[ctrl.activeView](ctrl)
