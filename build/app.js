@@ -40,7 +40,9 @@ var app = {
         self.updateBalance = function() {
             console.log("going to get the balance:");
             web3Helper.getAccountBalance().then(function(balance) {
+                m.startComputation();
                 self.accountBalance(balance);
+                m.endComputation();
             })
         }
 
@@ -54,8 +56,12 @@ var app = {
                 private: privKey
             }
             localStorage.account = JSON.stringify(account);
-            web3Helper.fundAccount(account.address, 10000).then(function() {
-                self.changeView('homepage')
+            web3Helper.fundAccount(account.address).then(function() {
+                self.accountBalance(100000)
+                self.changeView('homepage');
+                setTimeout(function(){
+                    m.redraw();
+                },10)
             })
         }
 
@@ -123,8 +129,9 @@ var app = {
         }
 
         self.changeView = function(view) {
+            m.startComputation();
             self.activeView = view;
-            self.doRedraw();
+            m.endComputation();
         }
 
         self.doRedraw = function() {
@@ -16228,7 +16235,7 @@ module.exports = function(ctrl) {
 }
 },{}],89:[function(require,module,exports){
 module.exports = function(ctrl) {
-          ctrl.updateBalance();
+    ctrl.updateBalance();
     return [
         m("[layout='column'][layout-align='start center']", [
             m("nav", [
@@ -16255,8 +16262,8 @@ module.exports = function(ctrl) {
                 m(".balance-row[layout='column'][layout-align='center start']", [
                     m(".balance-title", {
                         config: function(elem, isInit, ctx) {}
-                    }, (!ctrl.accountBalance()) ? 'Retrieving...' : ctrl.dollarFormat(ctrl.accountBalance())),
-                    m("span", "Current account balance for "+account.address)
+                    }, (!ctrl.accountBalance()) ? 'Retrieving...' : ctrl.accountBalance()),
+                    m("span", "Account Balance")
                 ]),
                 m(".section-title", "Assets"),
                 ctrl.ownedAssets.length == 0 ? m(".asset-row[layout='row'][layout-align='space-between center']", [
@@ -16577,14 +16584,7 @@ module.exports = function() {
             var deferred = m.deferred();
             if (!Object.keys(account).length) return deferred.reject("no account");
             balance = web3.fromWei(web3.eth.getBalance(account.address), "wei").toString();
-
-            if (balance == 0) {
-                web3Helper.fundAccount(account.address, 1e18).then(function() {
-                    deferred.resolve(balance)
-                })
-            } else {
-                deferred.resolve(balance);
-            }
+            deferred.resolve(balance);
             return deferred.promise;
         },
         sendransaction: function(toAddress, amount) {
@@ -16609,21 +16609,21 @@ module.exports = function() {
             })
             return deferred.promise();
         },
-        fundAccount: function(toAddress, amount) {
+        fundAccount: function(toAddress) {
             var deferred = m.deferred();
 
             web3.eth.sendTransaction({
                 from: coinbase.address,
                 fromObj: coinbase,
                 to: toAddress,
-                value: amount
+                value: 100000
             }, function(err, result) {
                 if (err != null) {
                     console.log(err);
-                    deferred.reject(err)
+                    deferred.reject(false)
                     console.log("ERROR: Transaction didn't go through. See console.");
                 } else {
-                    deferred.resolve(result);
+                    deferred.resolve(true);
                     console.log("Transaction Successful!");
                     console.log(err, result);
                 }

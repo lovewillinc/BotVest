@@ -38,7 +38,9 @@ var app = {
         self.updateBalance = function() {
             console.log("going to get the balance:");
             web3Helper.getAccountBalance().then(function(balance) {
+                m.startComputation();
                 self.accountBalance(balance);
+                m.endComputation();
             })
         }
 
@@ -52,8 +54,12 @@ var app = {
                 private: privKey
             }
             localStorage.account = JSON.stringify(account);
-            web3Helper.fundAccount(account.address, 10000).then(function() {
-                self.changeView('homepage')
+            web3Helper.fundAccount(account.address).then(function() {
+                self.accountBalance(100000)
+                self.changeView('homepage');
+                setTimeout(function(){
+                    m.redraw();
+                },10)
             })
         }
 
@@ -121,8 +127,9 @@ var app = {
         }
 
         self.changeView = function(view) {
+            m.startComputation();
             self.activeView = view;
-            self.doRedraw();
+            m.endComputation();
         }
 
         self.doRedraw = function() {
