@@ -26,7 +26,7 @@ module.exports = function(ctrl) {
                 m(".balance-row[layout='column'][layout-align='center start']", [
                     m(".balance-title", {
                         config: function(elem, isInit, ctx) {}
-                    }, (!ctrl.accountBalance()) ? 'Retrieving...' : ctrl.accountBalance()),
+                    }, (!ctrl.accountBalance()) ? 'Retrieving...' : ctrl.dollarFormat(ctrl.accountBalance())),
                     m("span", "Account Balance")
                 ]),
                 m(".section-title", "Assets"),
