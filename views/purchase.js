@@ -42,7 +42,7 @@ module.exports = function(ctrl) {
                 m("span.inputBalanceLabel", "Current Balance: " + ctrl.accountBalance)
             ]),
             m(".purchase.u-padding-0_16[layout='row'][layout-align='space-between center']", [
-                m("a.btn.btn-primary[", {
+                m("a.btn.btn-primary", {
                     onclick: ctrl.purchaseAsset
                 }, "Purchase"),
                 m("a.btn", {
