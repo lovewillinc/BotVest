@@ -39,12 +39,8 @@ module.exports = function(ctrl) {
                     ]),
                     m(".asset-row[layout='row'][layout-align='space-between center']", [
                         m("strong", "Share Value"),
-                        m("div", ctrl.scannedAsset.shareValue)
+                        m("div", ctrl.convertYoSzabo(ctrl.scannedAsset.shareValue))
                     ]),
-                    m(".asset-row.u-marginBottom-24[layout='row'][layout-align='space-between center']", [
-                        m("strong", "Total Share Value"),
-                        m("div", ctrl.scannedAsset.totalShareValue)
-                    ])
                 ]),
                 m("section.u-padding-0_16", [
                     m(".inputPurchaseTitle", "Enter Purchase Amount"),
@@ -52,7 +48,7 @@ module.exports = function(ctrl) {
                         oninput: m.withAttr("value", ctrl.purchaseAmount),
                         value: ctrl.purchaseAmount()
                     }),
-                    m("span.inputBalanceLabel", "Current Balance: " + ctrl.accountBalance )
+                    m("span.inputBalanceLabel", "Current Balance: " + ctrl.dollarFormat(ctrl.accountBalance()))
                 ]),
                 // m(".asset-row.u-noBorder[layout='row'][layout-align='space-between center']", [
                 //     m("div", "Shares to be purchased"),

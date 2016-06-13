@@ -40,7 +40,7 @@ module.exports = function(ctrl) {
                             }
                         }, [
                             m("div", asset.name),
-                            m("div", asset.totalShareValue)
+                            m("div", ctrl.convertYoSzabo(asset.totalShareValue))
                         ])
                     })
                 ])
