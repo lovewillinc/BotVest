@@ -4,26 +4,43 @@
 .u-marginBottom-24 {
   margin-bottom: 24px;
 }
+.u-width-40 {
+  width: 40px;
+}
+.u-width-56 {
+  width: 56px;
+}
+.u-width-314 {
+  width: 314px;
+}
+.u-noBorder {
+  border: none !important;
+}
+.logo-small {
+  width: 45px;
+}
 .logo-big {
   /* Rectangle 2: */
-​
-  background: #D8D8D8;
-  border: 1px solid #979797;
-  margin-top: 208px;
+
+  background-image: url("../img/botBig.png");
+  background-position: center center;
+  background-repeat: no-repeat;
+  margin-top: 120px;
   margin-bottom: 80px;
-  height: 142px;
-  width: 142px;
+  height: 300px;
+  width: 220px;
 }
 .btn {
   height: 48px;
   line-height: 48px;
   transition: all 0.3s ease-out;
-  border: solid 1px #4caf50;
-  color: #4caf50;
+  border: solid 1px #43a047;
+  color: #43a047;
   background-color: rgba(0, 0, 0, 0.06);
   font-size: 1rem !important;
   padding: 0 1.75rem;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.06), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
 }
 .btn:hover,
 .btn:focus {
@@ -35,24 +52,48 @@
 .btn:active {
   background-color: #bdbdbd !important;
 }
+.btn-primary {
+  background-color: #43a047;
+  border: solid 1px #eeeeee;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  color: white;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #3b8e3f !important;
+}
+.btn-primary:active {
+  background-color: #2c6a2f !important;
+}
 nav {
   padding: 20px 16px 0px;
   height: 80px;
-  background-color: #eeeeee !important;
+  background-color: #ffb74d !important;
   color: #757575;
+  z-index: 300;
 }
 nav i.material-icons {
   font-size: 22px;
   margin-left: 16px;
   display: inline-block;
+  color: rgba(0, 0, 0, 0.87);
+}
+nav .firstIcon {
+  margin-left: 0px !important;
 }
 .title {
   /* Title: */
-​
+
   font-size: 20px;
   color: rgba(0, 0, 0, 0.87);
   letter-spacing: 0px;
   font-weight: 500;
+}
+.content {
+  height: calc(100vh - 80px);
+  overflow: hidden;
+  overflow-y: scroll;
+  width: 100%;
 }
 .balance-row {
   padding: 0px 16px;
@@ -63,14 +104,13 @@ nav i.material-icons {
 }
 .balance-row span {
   /* Current Account Bala: */
-​
+
   font-size: 12px;
   color: #9B9B9B;
-  line-height: 12px;
 }
 .balance-title {
   /* $14,000.00: */
-​
+
   font-weight: 500;
   font-size: 36px;
   color: #4A4A4A;
@@ -78,7 +118,7 @@ nav i.material-icons {
 /* Assets: */
 .section-title {
   font-size: 16px;
-  color: #009789;
+  color: #43a047;
   margin-bottom: 16px;
   width: 100%;
   padding: 0px 16px;
@@ -91,7 +131,39 @@ nav i.material-icons {
 }
 .asset-date {
   /* 08-28-16: */
-​
+
   color: #9B9B9B;
   margin-right: 16px;
+}
+.inputPurchaseTitle {
+  /* Enter purchase amoun: */
+
+  font-family: Roboto-Medium;
+  font-size: 24px;
+  color: #4A4A4A;
+  letter-spacing: -0.58px;
+  margin-bottom: 8px;
+}
+.inputBorder {
+  border: solid 1px #eeeeee !important;
+  text-indent: 16px;
+  border-radius: 4px !important;
+  margin-bottom: 4px !important;
+}
+.inputBalanceLabel {
+  /* Current balance:  $5: */
+
+  font-weight: 300;
+  font-size: 12px;
+  color: #4A4A4A;
+}
+.purchase {
+  padding-top: 56px;
+}
+.purchase .btn {
+  width: 48%;
+}
+.item-purchase {
+  padding: 32px 16px 24px;
+  margin-bottom: 24px;
 }
