@@ -78,23 +78,27 @@ var app = {
         }
 
         self.doScanAction = function(result) {
-            result = "b:0x73d61b6effc71243629aa3caedf496221f56a43f"
             var parts = result.split(':');
             var type = parts[0];
+            console.log("type:", type)
             var address = parts[1];
             self.scannedAddress = address;
 
             if (type == 'p') {
-                var price = parts[2];
+                console.log("all iup in here")
                 //it is a pay into
                 self.scannedAsset = {
                     name: assetDictionary[address].name,
                     img: assetDictionary[address].img,
                     address: address,
-                    price: price,
-                    transactions: []
+                    price: 10e14
                 }
-                self.changeView('pay');
+                web3Helper.payBot(self.scannedAsset, function() {
+                    self.changeView('homepage');
+                    setTimeout(function() {
+                        alert("Payment disbursed to bot shareholders.")
+                    }, 1000)
+                })
             } else {
                 self.showLoader('Retrieving Asset Data...')
 

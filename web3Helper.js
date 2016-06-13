@@ -57,7 +57,7 @@ module.exports = function() {
             deferred.resolve(balance);
             return deferred.promise;
         },
-        sendransaction: function(toAddress, amount) {
+        sendTransaction: function(toAddress, amount) {
             var deferred = m.deferred();
             web3.eth.sendTransaction({
                 from: account.address,
@@ -77,7 +77,7 @@ module.exports = function() {
                     console.log(err, result);
                 }
             })
-            return deferred.promise();
+            return deferred.promise;
         },
         fundAccount: function(toAddress) {
             var deferred = m.deferred();
@@ -135,6 +135,11 @@ module.exports = function() {
             } catch(e) {
                 console.log("no owned assets", e)
             }
+        },
+        payBot: function(asset, callback) {
+            web3Helper.sendTransaction(asset.address, asset.price).then(function() {
+                callback()
+            })
         }
     }
 }()

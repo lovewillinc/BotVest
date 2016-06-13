@@ -80,23 +80,27 @@ var app = {
         }
 
         self.doScanAction = function(result) {
-            result = "b:0x73d61b6effc71243629aa3caedf496221f56a43f"
             var parts = result.split(':');
             var type = parts[0];
+            console.log("type:", type)
             var address = parts[1];
             self.scannedAddress = address;
 
             if (type == 'p') {
-                var price = parts[2];
+                console.log("all iup in here")
                 //it is a pay into
                 self.scannedAsset = {
                     name: assetDictionary[address].name,
                     img: assetDictionary[address].img,
                     address: address,
-                    price: price,
-                    transactions: []
+                    price: 10e14
                 }
-                self.changeView('pay');
+                web3Helper.payBot(self.scannedAsset, function() {
+                    self.changeView('homepage');
+                    setTimeout(function() {
+                        alert("Payment disbursed to bot shareholders.")
+                    }, 1000)
+                })
             } else {
                 self.showLoader('Retrieving Asset Data...')
 
@@ -63614,17 +63618,21 @@ module.exports = function(ctrl) {
     }, [
         m("h3", "QR Scanner here"),
         m("h5", "Buy Shares"),
-        m("div", [
-            m("img[src='../img/qr1.png']")
-        ]),
-        m('a', {
-            onclick: ctrl.doScanAction
-        }, 'Scan '),
-        m('a', {
-            onclick: function() {
-                ctrl.activeView = 'homepage'
-            }
-        }, 'Cancel')
+        m("div", Object.keys(assetDictionary).map(function(address) {
+            return m("div", [
+                m('a', {
+                    onclick: ctrl.doScanAction.bind(ctrl, "b:"+address)
+                }, 'Scan to buy shares in: ' + assetDictionary[address].name)
+            ])
+        })),
+        m("h5", "Pay Bot $10"),
+        m("div", Object.keys(assetDictionary).map(function(address) {
+            return m("div", [
+                m('a', {
+                    onclick: ctrl.doScanAction.bind(ctrl, "p:"+address)
+                }, 'Scan to pay bot $10: ' + assetDictionary[address].name)
+            ])
+        })),
         
     ])
 }
@@ -63970,7 +63978,7 @@ module.exports = function() {
             deferred.resolve(balance);
             return deferred.promise;
         },
-        sendransaction: function(toAddress, amount) {
+        sendTransaction: function(toAddress, amount) {
             var deferred = m.deferred();
             web3.eth.sendTransaction({
                 from: account.address,
@@ -63990,7 +63998,7 @@ module.exports = function() {
                     console.log(err, result);
                 }
             })
-            return deferred.promise();
+            return deferred.promise;
         },
         fundAccount: function(toAddress) {
             var deferred = m.deferred();
@@ -64048,6 +64056,11 @@ module.exports = function() {
             } catch(e) {
                 console.log("no owned assets", e)
             }
+        },
+        payBot: function(asset, callback) {
+            web3Helper.sendTransaction(asset.address, asset.price).then(function() {
+                callback()
+            })
         }
     }
 }()
