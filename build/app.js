@@ -55,7 +55,6 @@ var app = {
                 private: privKey
             }
             localStorage.account = JSON.stringify(account);
-            localStorage.ownedAssets = JSON.stringify([])
             web3Helper.fundAccount(account.address).then(function() {
                 self.accountBalance(100000)
                 self.changeView('homepage');
@@ -117,10 +116,10 @@ var app = {
             paymentAmount = paymentAmount * (1e12)
             console.log("it is now:", paymentAmount);
             web3Helper.purchaseAsset(self.scannedAsset.address, paymentAmount, function(sharesOwned) {
-                self.scannedAsset.sharesOwned = sharesOwned;
-                localStorage.ownedAssets = JSON.parse(localStorage.ownedAssets).push(self.scannedAsset)
-                
+                self.scannedAsset.sharesOwned = sharesOwned.toNumber();
                 self.ownedAssets.push(self.scannedAsset);
+                localStorage.ownedAssets = JSON.stringify(self.ownedAssets);
+                
                 alert("Successfully Purchased Asset!")
                 self.changeView('homepage');
                 m.redraw();
@@ -16297,13 +16296,14 @@ module.exports = function(ctrl) {
                     m("div", "No assets are currently owned."),
                 ]) : m('div', [
                     ctrl.ownedAssets.map(function(asset) {
+                        console.log("asset is@:", asset);
                         return m(".asset-row[layout='row'][layout-align='space-between center']", {
                             onclick: function() {
                                 ctrl.viewAsset(asset);
                             }
                         }, [
                             m("div", asset.name),
-                            m("div", ctrl.convertYoSzabo(asset.totalShareValue))
+                            m("div", ctrl.convertYoSzabo(asset.sharesOwned))
                         ])
                     })
                 ])
@@ -16590,7 +16590,7 @@ module.exports = function() {
 
                 var tx = new Tx(ethjsTxParams);
                 console.log(ethjsTxParams);
-                tx.sign(new Buffer(txParams.fromObj && txParams.fromObj.privateKey || account.privateKey, 'hex'));
+                tx.sign(new Buffer(txParams.fromObj && txParams.fromObj.private || account.privateKey, 'hex'));
                 var serializedTx = '0x' + tx.serialize().toString('hex');
 
                 callback(null, serializedTx);
@@ -16664,7 +16664,11 @@ module.exports = function() {
         },
         purchaseAsset: function(address, value, callback) {
             var purchaseAsset = asset.at(address);
-            purchaseAsset.buyShares({value: value}, function(response){
+            purchaseAsset.buyShares({
+                value: value,
+                from: account.address,
+                fromObj: account
+            }, function(response){
                 var sharesOwned = purchaseAsset.balanceOf(account.address)
                 console.log("sharesOwned", sharesOwned)
                 callback(sharesOwned)

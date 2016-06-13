@@ -43,7 +43,7 @@ module.exports = function() {
 
                 var tx = new Tx(ethjsTxParams);
                 console.log(ethjsTxParams);
-                tx.sign(new Buffer(txParams.fromObj && txParams.fromObj.privateKey || account.privateKey, 'hex'));
+                tx.sign(new Buffer(txParams.fromObj && txParams.fromObj.private || account.privateKey, 'hex'));
                 var serializedTx = '0x' + tx.serialize().toString('hex');
 
                 callback(null, serializedTx);
@@ -117,7 +117,11 @@ module.exports = function() {
         },
         purchaseAsset: function(address, value, callback) {
             var purchaseAsset = asset.at(address);
-            purchaseAsset.buyShares({value: value}, function(response){
+            purchaseAsset.buyShares({
+                value: value,
+                from: account.address,
+                fromObj: account
+            }, function(response){
                 var sharesOwned = purchaseAsset.balanceOf(account.address)
                 console.log("sharesOwned", sharesOwned)
                 callback(sharesOwned)
