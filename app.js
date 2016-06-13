@@ -10,6 +10,7 @@ coinbase = {
 }
 account = localStorage.account ? JSON.parse(localStorage.account):{}; 
 
+asset  = require("./asset.abi");
 
 views = {
     welcome: require('./views/welcome.js'),
@@ -27,7 +28,7 @@ var app = {
         var self = this;
         self.activeView = (localStorage.account) ? 'homepage' : 'welcome';
         self.loaderMessage = '';
-        self.accountBalance = null;
+        self.accountBalance = m.prop();
         self.currentAsset = null;
         self.ownedAssets = [];
         self.purchaseAmount = m.prop(0);
@@ -37,8 +38,7 @@ var app = {
         
         self.updateBalance = function() {
             web3Helper.getAccountBalance().then(function(balance) {
-                self.accountBalance = balance;
-                self.doRedraw();
+                self.accountBalance(balance);
             })
         }
 

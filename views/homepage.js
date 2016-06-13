@@ -1,4 +1,5 @@
 module.exports = function(ctrl) {
+          ctrl.updateBalance();
     return [
         m("[layout='column'][layout-align='start center']", [
             m("nav", [
@@ -24,11 +25,8 @@ module.exports = function(ctrl) {
             m(".content", [
                 m(".balance-row[layout='column'][layout-align='center start']", [
                     m(".balance-title", {
-                        config: function(elem, isInit, ctx) {
-                            if (!isInit)
-                                ctrl.updateBalance();
-                        }
-                    }, (!ctrl.accountBalance) ? 'Retrieving...' : ctrl.dollarFormat(ctrl.accountBalance)),
+                        config: function(elem, isInit, ctx) {}
+                    }, (!ctrl.accountBalance()) ? 'Retrieving...' : ctrl.dollarFormat(ctrl.accountBalance())),
                     m("span", "Current account balance for "+account.address)
                 ]),
                 m(".section-title", "Assets"),
