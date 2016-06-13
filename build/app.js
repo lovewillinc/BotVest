@@ -76747,7 +76747,7 @@ module.exports = function(ctrl) {
                             if (!isInit)
                                 ctrl.updateBalance();
                         }
-                    }, (!ctrl.accountBalance) ? 'Retrieving...' : self.dollarFormat(ctrl.accountBalance)),
+                    }, (!ctrl.accountBalance) ? 'Retrieving...' : ctrl.dollarFormat(ctrl.accountBalance)),
                     m("span", "Current account balance")
                 ]),
                 m(".section-title", "Assets"),
