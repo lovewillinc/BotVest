@@ -23160,7 +23160,8 @@ views = {
     QRScan: require('./views/QRScan.js'),
     purchase: require('./views/purchase.js'),
     portfolio: require('./views/portfolio.js'),
-    loader: require('./views/loader.js')
+    loader: require('./views/loader.js'),
+    pay: require('./views/pay.js')
 }
 
 var app = {
@@ -23213,19 +23214,38 @@ var app = {
             self.activeView = 'QRScan';
         }
 
-        self.doScanAction = function() {
+        self.doScanAction = function(result) {
+            //first parse the result string to get type,address,price
+            //if result is of type p then you immediately diplay the pay template;
+            //else if its type b then show loader and get the purchase data for that 
+            //address from the chain.
+            //Once you have the purchase data from the chain, format scannedAsset to have 
+            //requisite data and then show the purchase data template
             self.showLoader('Retrieving Asset Data...')
-            self.scannedAddress = "123EF323";
-            web3Helper.getPurchaseData().then(function(response) {
+            var parts = result.split(':');
+            self.scannedAddress = parts[1];
+            if(parts[0] == 'p'){
+                //it is a pay into
                 self.scannedAsset = {
-                    address: "1321EF232",
-                    name: "Fioretti",
-                    sharesAvailable: "1000",
-                    shareValue: "$1.00",
-                    totalShareValue: "$1,000.00"
+                    address: parts[1],
+                    price: parts[2],
+                    name: 'Asset Name Here'
                 }
-                self.changeView('purchase');
-            })
+                self.changeView('pay');
+            } else {
+                //it is a buy
+                web3Helper.getPurchaseData().then(function(response) {
+                    //this is fake right now
+                    self.scannedAsset = {
+                        address: "1321EF232",
+                        name: "Fioretti",
+                        sharesAvailable: "1000",
+                        shareValue: "$1.00",
+                        totalShareValue: "$1,000.00"
+                    }
+                    self.changeView('purchase');
+                })
+            }
         }
 
         self.purchaseAsset = function() {
@@ -23314,14 +23334,25 @@ var app = {
             }
         }
 
+        self.payToAsset = function() {
+            //send money to asset contract
+            var paymentAmount = self.scannedAddress.price;
+            var assestAddress = "THE ASSEST ADDRESS HERE"
+            web3Helper.sendransaction(assestAddress, paymentAmount).then(function(response){
+                alert('You have successfully paid '+paymentAmount+' into asset'+ self.scannedAsset.name)
+                self.changeView('homepage')
+            })
+        }
+
         self.openScanner = function() {
             try {
                 cordova.plugins.barcodeScanner.scan(
                     function(result) {
                         if (!result.cancelled) {
                             if (result.format == "QR_CODE") {
-                                //stub here
-                                self.doScanAction();
+                                alert("got a result");
+                                alert(result);
+                                self.doScanAction(result);
                             }
                         }
                     },
@@ -23342,7 +23373,7 @@ var app = {
 }
 m.mount(document.body, app)
 }).call(this,require("buffer").Buffer)
-},{"./views/QRScan.js":617,"./views/homepage.js":618,"./views/loader.js":619,"./views/portfolio.js":620,"./views/purchase.js":621,"./views/viewAsset.js":622,"./views/welcome.js":623,"./web3Helper":624,"bitcore-lib":231,"buffer":3,"ethereumjs-tx":304,"ethereumjs-wallet":358,"mithril":531,"web3":532}],231:[function(require,module,exports){
+},{"./views/QRScan.js":617,"./views/homepage.js":618,"./views/loader.js":619,"./views/pay.js":620,"./views/portfolio.js":621,"./views/purchase.js":622,"./views/viewAsset.js":623,"./views/welcome.js":624,"./web3Helper":625,"bitcore-lib":231,"buffer":3,"ethereumjs-tx":304,"ethereumjs-wallet":358,"mithril":531,"web3":532}],231:[function(require,module,exports){
 (function (global,Buffer){
 'use strict';
 
@@ -76808,6 +76839,65 @@ module.exports = function(ctrl) {
 },{}],620:[function(require,module,exports){
 module.exports = function(ctrl) {
     return [
+        m("[layout='column'][layout-align='start center']", [
+            m("nav", [
+                m("[layout='row'][layout-align='space-between center']", [
+                    m("[layout='row'][layout-align='start center']", [
+                        m(".u-width-56",{
+                            onclick: function(){
+                                ctrl.activeView = 'homepage';
+                            }
+                        }, [
+                            m("i.material-icons.firstIcon", "arrow_back")
+                        ]),
+                        m("span.title", "Purchase Asset")
+                    ]),
+                    m("[layout='row'][layout-align='end center']", [
+                        m("i.material-icons",{
+                            onclick: function() {
+                                ctrl.activeView = 'QRScan';
+                            }
+                        }, "credit_card"),
+                        m("i.material-icons",{
+                            onclick: function() {
+                                ctrl.activeView = 'portfolio';
+                            }
+                        }, "work")
+                    ])
+                ])
+            ]),
+            m(".content", [
+                m(".grey.lighten-5", [
+                    m(".balance-row[layout='column'][layout-align='center start']", [
+                        m(".balance-title", ctrl.scannedAsset.name),
+                        m("span", ctrl.scannedAsset.address)
+                    ]),
+                    m(".asset-row[layout='row'][layout-align='space-between center']", [
+                        m("strong", "Price"),
+                        m("div", ctrl.scannedAsset.price)
+                    ]),
+                ]),
+                m("section.u-padding-0_16", [
+                    m("span.inputBalanceLabel", "Current Balance: " + ctrl.accountBalance )
+                ]),
+                m(".purchase.u-padding-0_16[layout='row'][layout-align='space-between center']", [
+                    m("a.btn.btn-primary",{
+                        onclick: ctrl.payToAsset
+                    }, "Pay"),
+                    m("a.btn",{
+                        onclick: function() {
+                            ctrl.activeView = "homepage";
+                        }
+                    }, "Cancel")
+                ])
+            ])
+        ])
+    ]
+}
+
+},{}],621:[function(require,module,exports){
+module.exports = function(ctrl) {
+    return [
         m("h3", "PORTFOLIO HERE"),
         m('a',{
         	onclick: function(){
@@ -76817,7 +76907,7 @@ module.exports = function(ctrl) {
     ]
 }
 
-},{}],621:[function(require,module,exports){
+},{}],622:[function(require,module,exports){
 module.exports = function(ctrl) {
     return [
         m("[layout='column'][layout-align='start center']", [
@@ -76879,7 +76969,7 @@ module.exports = function(ctrl) {
                 //     m("div", ctrl.purchaseShares)
                 // ]),
                 m(".purchase.u-padding-0_16[layout='row'][layout-align='space-between center']", [
-                    m("a.btn.btn-primary[href='#']",{
+                    m("a.btn.btn-primary",{
                         onclick: ctrl.purchaseAsset
                     }, "Purchase"),
                     m("a.btn",{
@@ -76893,7 +76983,7 @@ module.exports = function(ctrl) {
     ]
 }
 
-},{}],622:[function(require,module,exports){
+},{}],623:[function(require,module,exports){
 module.exports = function(ctrl) {
     return [
         m("[layout='column'][layout-align='start center']", [
@@ -76961,7 +77051,7 @@ module.exports = function(ctrl) {
     ]
 }
 
-},{}],623:[function(require,module,exports){
+},{}],624:[function(require,module,exports){
 module.exports = function(ctrl) {
     return [
         m("[layout='column'][layout-align='center center']", [
@@ -76976,7 +77066,7 @@ module.exports = function(ctrl) {
 
 }
 
-},{}],624:[function(require,module,exports){
+},{}],625:[function(require,module,exports){
 (function (Buffer){
 module.exports = function() {
     HookedWeb3Provider = require("hooked-web3-provider");
