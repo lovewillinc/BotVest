@@ -10,7 +10,7 @@ coinbase = {
 }
 account = localStorage.account ? JSON.parse(localStorage.account):{}; 
 
-asset  = require("./asset.abi");
+asset  = require("./asset.abi")();
 
 views = {
     welcome: require('./views/welcome.js'),
