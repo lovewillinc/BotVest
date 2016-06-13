@@ -32,12 +32,19 @@ module.exports = function(ctrl) {
                     m("span", "Account Balance")
                 ]),
                 m(".section-title", "Assets"),
-                Object.keys(ctrl.ownedAssets).length == 0 ? m(".asset-row[layout='row'][layout-align='space-between center']", [
+                Object.keys(assetDictionary).length == 0 ? m(".asset-row[layout='row'][layout-align='space-between center']", [
                     m("div", "No assets are currently owned."),
                 ]) : m('div', [
-                    Object.keys(ctrl.ownedAssets).map(function(i) {
-                        var asset = ctrl.ownedAssets[i];
-                        console.log("asset is@:", asset);
+                    Object.keys(assetDictionary).map(function(i) {
+                        var asset = assetDictionary[i];
+                        console.log("ctrl.ownedAssets", ctrl.ownedAssets);
+                        console.log("asset.address", i);
+                        
+                        if(ctrl.ownedAssets[i]) 
+                            asset.sharesOwned = ctrl.ownedAssets[i].sharesOwned;
+                        else
+                            asset.sharesOwned = 0;
+                        
                         return m(".asset-row[layout='row'][layout-align='space-between center']", {
                             onclick: function() {
                                 ctrl.viewAsset(asset);

@@ -6,14 +6,18 @@ module.exports = function(ctrl) {
         }
     }, [
         m("h3", "QR Scanner here"),
+        m("h5", "Buy Shares"),
+        m("div", [
+            m("img[src='../img/qr1.png']")
+        ]),
         m('a', {
             onclick: ctrl.doScanAction
-        }, 'Scan'),
+        }, 'Scan '),
         m('a', {
             onclick: function() {
                 ctrl.activeView = 'homepage'
             }
-        }, 'cancel')
+        }, 'Cancel')
         
     ])
 }
