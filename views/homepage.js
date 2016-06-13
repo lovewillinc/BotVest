@@ -30,10 +30,11 @@ module.exports = function(ctrl) {
                     m("span", "Account Balance")
                 ]),
                 m(".section-title", "Assets"),
-                ctrl.ownedAssets.length == 0 ? m(".asset-row[layout='row'][layout-align='space-between center']", [
+                Object.keys(ctrl.ownedAssets).length == 0 ? m(".asset-row[layout='row'][layout-align='space-between center']", [
                     m("div", "No assets are currently owned."),
                 ]) : m('div', [
-                    ctrl.ownedAssets.map(function(asset) {
+                    Object.keys(ctrl.ownedAssets).map(function(i) {
+                        var asset = ctrl.ownedAssets[i];
                         console.log("asset is@:", asset);
                         return m(".asset-row[layout='row'][layout-align='space-between center']", {
                             onclick: function() {
@@ -41,7 +42,7 @@ module.exports = function(ctrl) {
                             }
                         }, [
                             m("div", asset.name),
-                            m("div", ctrl.convertYoSzabo(asset.sharesOwned))
+                            m("div", asset.sharesOwned)
                         ])
                     })
                 ])

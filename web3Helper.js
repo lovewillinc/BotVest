@@ -1,8 +1,4 @@
 module.exports = function() {
-    var coinbase = {
-        address: "0x89e3a0403f1b4e3e5ed422d2eb3f0f40e9dd6f12",
-        privateKey: "5603601f6d1fdd9eb59a569d8a300e1a1385af668dd8c7f79709001a873baa1b"
-    }
 
     HookedWeb3Provider = require("hooked-web3-provider");
     provider = new HookedWeb3Provider({
@@ -106,7 +102,6 @@ module.exports = function() {
         },
         getPurchaseData: function(address) {
             var deferred = m.deferred();
-            var address = "0x3524816c8501cfc1f9bc7c845905a9a5682ae3c1";
             var purchaseAsset = asset.at(address);
             var purchaseData = {
                 shareValue: purchaseAsset.currentPrice.call().toNumber(),
@@ -122,11 +117,24 @@ module.exports = function() {
                 from: account.address,
                 fromObj: account
             }, function(response){
-                var sharesOwned = purchaseAsset.balanceOf(account.address)
+                var sharesOwned = purchaseAsset.balanceOf(account.address).toNumber()
                 console.log("sharesOwned", sharesOwned)
                 callback(sharesOwned)
                 console.log("response from purchaseAsset!!!:", arguments);
             })
+        },
+        updateAssetBalances: function(callback) {
+            try {
+                var ownedAssets = JSON.parse(localStorage.ownedAssets);
+                Object.keys(ownedAssets).map(function(ownedAsset) {
+                    var theAsset = asset.at(ownedAsset.address);
+                    ownedAsset.sharesOwned = theAsset.balanceOf(account.address).toNumber()
+                })
+                localStorage.ownedAssets = JSON.stringify(ownedAssets);
+                callback(ownedAssets)
+            } catch(e) {
+                console.log("no owned assets", e)
+            }
         }
     }
 }()

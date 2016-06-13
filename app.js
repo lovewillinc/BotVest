@@ -8,7 +8,7 @@ Web3 = require('web3');
 web3Helper = require('./web3Helper');
 coinbase = {
     address: "0x89e3a0403f1b4e3e5ed422d2eb3f0f40e9dd6f12",
-    privateKey: "5603601f6d1fdd9eb59a569d8a300e1a1385af668dd8c7f79709001a873baa1b"
+    private: "5603601f6d1fdd9eb59a569d8a300e1a1385af668dd8c7f79709001a873baa1b"
 }
 account = localStorage.account ? JSON.parse(localStorage.account) : {};
 asset = require("./asset.abi")();
@@ -31,7 +31,7 @@ var app = {
         self.loaderMessage = '';
         self.accountBalance = m.prop();
         self.currentAsset = null;
-        self.ownedAssets = [];
+        self.ownedAssets = localStorage.ownedAssets ? JSON.parse(localStorage.ownedAssets) : {};
         self.purchaseAmount = m.prop(0);
         self.purchaseShares = 0;
         self.scannedAddress = '';
@@ -42,6 +42,9 @@ var app = {
                 m.startComputation();
                 self.accountBalance(balance);
                 m.endComputation();
+            })
+            web3Helper.updateAssetBalances(function(assets) {
+                self.ownedAssets(assets);
             })
         }
 
@@ -74,7 +77,7 @@ var app = {
         }
 
         self.doScanAction = function(result) {
-            result = "b:0x3524816c8501cfc1f9bc7c845905a9a5682ae3c1"
+            result = "b:0x73d61b6effc71243629aa3caedf496221f56a43f"
             var parts = result.split(':');
             var type = parts[0];
             var address = parts[1];
@@ -84,7 +87,8 @@ var app = {
                 var price = parts[2];
                 //it is a pay into
                 self.scannedAsset = {
-                    name: "Placeholder",
+                    name: assetDictionary[address].name,
+                    img: assetDictionary[address].img,
                     address: address,
                     price: price,
                     transactions: []
@@ -94,11 +98,12 @@ var app = {
                 self.showLoader('Retrieving Asset Data...')
 
                 //it is a buy
-                web3Helper.getPurchaseData().then(function(response) {
+                web3Helper.getPurchaseData(address).then(function(response) {
                     console.log("response from get getPurchaseDat:", response);
                     //this is fake right now
                     self.scannedAsset = {
-                        name: "Placeholder",
+                        name: assetDictionary[address].name,
+                        img: assetDictionary[address].img,
                         address: address,
                         sharesAvailable: response.sharesAvailable,
                         shareValue: response.shareValue,
@@ -111,15 +116,16 @@ var app = {
 
         self.purchaseAsset = function() {
             console.log(self.purchaseAmount())
-            var paymentAmount = self.amountToPenny(self.purchaseAmount());
-            console.log("paymentAmount is:", paymentAmount);
-            paymentAmount = paymentAmount * (1e12)
+            var paymentAmount = self.purchaseAmount() * (1e14)
             console.log("it is now:", paymentAmount);
             web3Helper.purchaseAsset(self.scannedAsset.address, paymentAmount, function(sharesOwned) {
-                self.scannedAsset.sharesOwned = sharesOwned.toNumber();
-                self.ownedAssets.push(self.scannedAsset);
-                localStorage.ownedAssets = JSON.stringify(self.ownedAssets);
-                
+                self.scannedAsset.sharesOwned = sharesOwned;
+                console.log("sharesOwned: ", self.scannedAsset.sharesOwned)
+
+                var ownedAssetsObj = self.ownedAssets
+                ownedAssetsObj[self.scannedAsset.address] = self.scannedAsset;
+                localStorage.ownedAssets = JSON.stringify(ownedAssetsObj);
+
                 alert("Successfully Purchased Asset!")
                 self.changeView('homepage');
                 m.redraw();
