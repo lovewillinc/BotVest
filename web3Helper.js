@@ -45,7 +45,7 @@ module.exports = function() {
         }
     });
     web3 = new Web3(provider);
-    account = account ? account : {};
+    account = {};
 
     return web3Helper = {
         getAccountBalance: function() {

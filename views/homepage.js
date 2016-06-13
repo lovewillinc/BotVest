@@ -28,13 +28,13 @@ module.exports = function(ctrl) {
                             if (!isInit)
                                 ctrl.updateBalance();
                         }
-                    }, (!ctrl.accountBalance) ? 'Retrieving...' : self.dollarFormat(ctrl.accountBalance)),
+                    }, (!ctrl.accountBalance) ? 'Retrieving...' : ctrl.dollarFormat(ctrl.accountBalance)),
                     m("span", "Current account balance")
                 ]),
                 m(".section-title", "Assets"),
                 ctrl.ownedAssets.length == 0 ? m(".asset-row[layout='row'][layout-align='space-between center']", [
                     m("div", "No assets are currently owned."),
-                ]), : m('div', [
+                ]) : m('div', [
                     ctrl.ownedAssets.map(function(asset) {
                         return m(".asset-row[layout='row'][layout-align='space-between center']", {
                             onclick: function() {

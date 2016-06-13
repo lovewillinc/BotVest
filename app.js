@@ -39,12 +39,12 @@ var app = {
 
         self.generateAccount = function() {
             self.showLoader('Generating your BotVest Account..')
-            // var privKey = new bitcore.PrivateKey().toString();
-            // var userKey = new Buffer(privKey, 'hex');
-            // var wallet = Wallet.fromPrivateKey(userKey);
+            var privKey = new bitcore.PrivateKey().toString();
+            var userKey = new Buffer(privKey, 'hex');
+            var wallet = Wallet.fromPrivateKey(userKey);
             account = {
-                address: "0x89e3a0403f1b4e3e5ed422d2eb3f0f40e9dd6f12",
-                privateKey: "5603601f6d1fdd9eb59a569d8a300e1a1385af668dd8c7f79709001a873baa1b"
+                address: wallet.getAddressString(),
+            	private: privKey
             }
             localStorage.account = JSON.stringify(account);
             web3Helper = require('./web3Helper');
@@ -84,7 +84,7 @@ var app = {
                 name: 'Fioretti',
                 sharesOwned: "1000",
                 shareValue: "$1.00",
-                totalShareValue: '$1,000.00'
+                totalShareValue: '$1,000.00',
                 transactions: [{
                     date: "03-21-2015",
                     amount: '- $1,000.00'
@@ -100,7 +100,7 @@ var app = {
                     name: 'Fioretti',
                     sharesOwned: "1000",
                     shareValue: "$1.00",
-                    totalShareValue: '$1,000.00'
+                    totalShareValue: '$1,000.00',
                     transactions: [{
                         date: "12-12-2012",
                         amount: '+ $100.00'
@@ -155,14 +155,14 @@ var app = {
         }
 
         self.pennyToAmount = function(amount) {
-                try {
+              try {
                     this.amount = (amount / 100).toString();
                     return this.convertToFiat(this.amount);
                 } catch (err) {
                     console.log(err);
                     return amount;
                 }
-            },
+        }
 
             return self;
     },
