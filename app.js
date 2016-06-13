@@ -141,7 +141,7 @@ var app = {
                 alert("about to try it");
                 try {
 
-                    Object.keys(cordova).forEach(function(key){
+                    Object.keys(cordova).forEach(function(key) {
                         alert(key);
                     })
 
@@ -149,19 +149,10 @@ var app = {
                         function(result) {
                             if (!result.cancelled) {
                                 if (result.format == "QR_CODE") {
-                                    navigator.notification.prompt("Please enter name of data", function(input) {
-                                        var name = input.input1;
-                                        var value = result.text;
-
-                                        var data = localStorage.getItem("LocalData");
-                                        console.log(data);
-                                        data = JSON.parse(data);
-                                        data[data.length] = [name, value];
-
-                                        localStorage.setItem("LocalData", JSON.stringify(data));
-
-                                        alert("Done");
-                                    });
+                                    alert("We got a barcode\n" +
+                                        "Result: " + result.text + "\n" +
+                                        "Format: " + result.format + "\n" +
+                                        "Cancelled: " + result.cancelled);
                                 }
                             }
                         },
